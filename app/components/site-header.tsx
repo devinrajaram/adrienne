@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
+
+import { EASE_NAV, INTRO_DELAY } from "./intro-motion";
 
 const NAV_LEFT = [
   { label: "About", href: "#about" },
@@ -18,6 +21,8 @@ const linkClass =
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const instant = reduceMotion === true;
 
   useEffect(() => {
     if (!open) return;
@@ -33,7 +38,20 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className="absolute inset-x-0 top-0 z-20">
+    <motion.header
+      className="absolute inset-x-0 top-0 z-20 will-change-transform"
+      initial={
+        instant
+          ? { opacity: 1, y: 0 }
+          : { opacity: 0, y: "-100%" }
+      }
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: instant ? 0 : 0.8,
+        delay: instant ? 0 : INTRO_DELAY.nav,
+        ease: EASE_NAV,
+      }}
+    >
       <nav
         aria-label="Primary"
         className="relative mx-auto flex h-[70px] max-w-[1400px] items-center px-6 sm:px-10 lg:px-8"
@@ -120,6 +138,6 @@ export function SiteHeader() {
           </ul>
         </div>
       ) : null}
-    </header>
+    </motion.header>
   );
 }

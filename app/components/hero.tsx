@@ -1,62 +1,145 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useReducedMotion } from "motion/react";
+import { EASE_HERO_OPACITY, HERO_STAGGER } from "./intro-motion";
 import { PressLogos } from "./press-logos";
 import { SiteHeader } from "./site-header";
 
 const ROLES = ["Strategist", "Curator", "Connector"];
 
+const HEADLINE = "Building the rooms senior creatives return to";
+
+function heroEntranceVariants(reduceMotion: boolean) {
+  if (reduceMotion) {
+    return {
+      column: {
+        hidden: {},
+        visible: {
+          transition: { staggerChildren: 0, delayChildren: 0 },
+        },
+      },
+      block: {
+        hidden: { opacity: 1, y: 0 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0 },
+        },
+      },
+    } as const;
+  }
+
+  return {
+    column: {
+      hidden: {},
+      visible: {
+        transition: {
+          staggerChildren: HERO_STAGGER,
+          delayChildren: 0,
+        },
+      },
+    },
+    block: {
+      hidden: { opacity: 0, y: 12 },
+      visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+          opacity: {
+            duration: 1.05,
+            ease: EASE_HERO_OPACITY,
+          },
+          y: {
+            type: "spring" as const,
+            stiffness: 76,
+            damping: 24,
+            mass: 0.88,
+          },
+        },
+      },
+    },
+  } as const;
+}
+
 export function Hero() {
+  const reduceMotion = useReducedMotion();
+  const instant = reduceMotion === true;
+  const variants = heroEntranceVariants(instant);
+
   return (
     <section
       aria-label="Introduction"
       className="relative flex min-h-svh flex-col bg-cream-200"
     >
-      <div className="relative isolate flex flex-1 flex-col overflow-hidden bg-haze-300">
-        <Image
-          src="/images/hero-haze.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="-z-10 object-cover object-center"
-        />
+      <div className="relative isolate flex min-h-0 flex-1 flex-col bg-haze-300">
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          <Image
+            src="/images/hero-haze.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
 
         <SiteHeader />
 
-        <div className="relative mx-auto flex w-full max-w-[1400px] flex-1 flex-col items-center justify-center px-6 pt-[120px] pb-12 text-center sm:px-10 sm:pt-[140px] sm:pb-16 lg:pt-[160px]">
-          <ul
-            aria-label="Roles"
-            className="flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-ink-900 sm:gap-5 sm:text-[15px]"
+        <motion.div
+          className="relative mx-auto flex w-full max-w-[1400px] flex-1 flex-col items-center justify-center px-6 pt-[120px] pb-12 text-center sm:px-10 sm:pt-[140px] sm:pb-16 lg:pt-[160px]"
+          variants={variants.column}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div
+            className="flex flex-col items-center gap-5"
+            variants={variants.block}
           >
-            {ROLES.map((role, i) => (
-              <li key={role} className="flex items-center gap-2.5 sm:gap-5">
-                <span>{role}</span>
-                {i < ROLES.length - 1 ? (
-                  <span
-                    aria-hidden
-                    className="block h-3 w-px bg-ink-900/60 sm:h-4"
-                  />
-                ) : null}
-              </li>
-            ))}
-          </ul>
+            {/* Inter 500, 15.1676px / 100% lh, 0.09em tracking, uppercase — per Figma auto-layout */}
+            <ul
+              aria-label="Roles"
+              className="flex shrink-0 flex-wrap items-center justify-center gap-3 font-sans text-[15.1676px] font-medium uppercase leading-[100%] tracking-[1.5px] text-ink-900"
+            >
+              {ROLES.map((role, i) => (
+                <li key={role} className="flex shrink-0 items-center gap-3">
+                  <span className="shrink-0">{role}</span>
+                  {i < ROLES.length - 1 ? (
+                    <span
+                      aria-hidden
+                      className="block h-[15px] w-px shrink-0 bg-ink-900/60"
+                    />
+                  ) : null}
+                </li>
+              ))}
+            </ul>
 
-          <h1 className="mt-7 max-w-[18ch] font-serif text-[clamp(2.25rem,5.5vw,4.3rem)] font-normal leading-[1.06] tracking-[-0.04em] text-ink-900 sm:mt-8">
-            Building the rooms senior creatives return to
-          </h1>
+            {/* Figma: display serif ~69px, leading 0.94, tracking ~-2.75px, max 804px */}
+            <h1 className="w-full max-w-[804px] text-pretty font-serif text-[clamp(2.5rem,5.2vw,4.305rem)] font-normal leading-[0.94] tracking-[-0.04em] text-ink-900">
+              {HEADLINE}
+            </h1>
+          </motion.div>
 
-          <p className="mt-6 max-w-xl text-[clamp(0.95rem,1.4vw,1.375rem)] leading-[1.32] tracking-[-0.01em] text-ink-900 sm:mt-7">
+          {/* Inter 20/400, leading 144%, tracking -0.01em, 457px — centered in flow (not absolute) */}
+          <motion.p
+            className="mt-4 w-full max-w-[457px] text-center text-pretty font-sans text-[20px] font-normal leading-[144%] tracking-[-0.01em] text-ink-900"
+            variants={variants.block}
+          >
             Strategic partnerships, executive experiences, and a practice of
             recalibration — so creative ambition can scale without depletion.
-          </p>
+          </motion.p>
 
-          <Link
-            href="#contact"
-            className="mt-8 inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-ink-700 px-6 text-[18px] font-medium tracking-[-0.01em] text-cream-100 transition-colors duration-200 hover:bg-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300 sm:mt-10"
-          >
-            Start a conversation
-          </Link>
-        </div>
+          {/* Figma: 48×279, p-8; label Inter Medium 17px, leading 1.19 */}
+          <motion.div className="mt-9" variants={variants.block}>
+            <Link
+              href="#contact"
+              className="inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-ink-700 p-2 text-[17px] font-medium leading-[1.19] tracking-[-0.01em] text-cream-100 transition-colors duration-200 hover:bg-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300"
+            >
+              Start a conversation
+            </Link>
+          </motion.div>
+        </motion.div>
       </div>
 
       <PressLogos />

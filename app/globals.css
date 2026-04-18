@@ -1,59 +1,9 @@
 @import "tailwindcss";
 
 /*
-  Charter is the intended display serif. Until the licensed web-font files
-  land in /public/fonts/charter/, we register an @font-face that resolves
-  via local() lookups (Charter ships on macOS) and the font stack falls
-  back to a high-quality transitional serif on systems without it.
-
-  When you drop Charter-Regular.woff2 / Charter-Bold.woff2 (and italics)
-  into public/fonts/charter/, uncomment the src: url() lines below and
-  the page will pick them up automatically.
+  Typography: Inter (UI, body, nav) via next/font → --font-inter
+  Display serif: Times New Roman stack (system / universal fallbacks)
 */
-@font-face {
-  font-family: "Charter Web";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src:
-    local("Charter"),
-    local("Charter Roman"),
-    local("Charter-Roman");
-  /* src: url("/fonts/charter/Charter-Regular.woff2") format("woff2"); */
-}
-
-@font-face {
-  font-family: "Charter Web";
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src:
-    local("Charter Italic"),
-    local("Charter-Italic");
-  /* src: url("/fonts/charter/Charter-Italic.woff2") format("woff2"); */
-}
-
-@font-face {
-  font-family: "Charter Web";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src:
-    local("Charter Bold"),
-    local("Charter-Bold");
-  /* src: url("/fonts/charter/Charter-Bold.woff2") format("woff2"); */
-}
-
-@font-face {
-  font-family: "Charter Web";
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-  src:
-    local("Charter Bold Italic"),
-    local("Charter-BoldItalic");
-  /* src: url("/fonts/charter/Charter-BoldItalic.woff2") format("woff2"); */
-}
 
 :root {
   --background: #f4ead2;
@@ -66,8 +16,8 @@
   --haze-300: #d8a886;
   --brick-600: #9e2616;
 
-  --font-charter: "Charter Web", "Iowan Old Style", "Palatino Linotype",
-    "Book Antiqua", Palatino, "Source Serif 4", Georgia, serif;
+  --font-times: "Times New Roman", Times, "Liberation Serif", "DejaVu Serif",
+    Georgia, "Noto Serif", serif;
 }
 
 @theme inline {
@@ -79,13 +29,13 @@
   --color-cream-200: var(--cream-200);
   --color-haze-300: var(--haze-300);
   --color-brick-600: var(--brick-600);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-charter);
+  --font-serif: var(--font-times);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
