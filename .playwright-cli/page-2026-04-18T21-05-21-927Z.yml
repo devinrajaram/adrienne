@@ -1,0 +1,59 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - region "Introduction" [ref=e3]:
+      - navigation "Primary" [ref=e5]:
+        - list [ref=e6]:
+          - listitem [ref=e7]:
+            - link "About" [ref=e8] [cursor=pointer]:
+              - /url: "#about"
+          - listitem [ref=e9]:
+            - link "Services" [ref=e10] [cursor=pointer]:
+              - /url: "#services"
+        - link "Adrienne L. Lucas — home" [ref=e11] [cursor=pointer]:
+          - /url: /
+          - text: Adrienne L. Lucas
+        - list [ref=e12]:
+          - listitem [ref=e13]:
+            - link "Media Kit" [ref=e14] [cursor=pointer]:
+              - /url: "#media-kit"
+          - listitem [ref=e15]:
+            - link "Contact" [ref=e16] [cursor=pointer]:
+              - /url: "#contact"
+      - generic [ref=e17]:
+        - list "Roles" [ref=e18]:
+          - listitem [ref=e19]:
+            - generic [ref=e20]: Strategist
+          - listitem [ref=e22]:
+            - generic [ref=e23]: Curator
+          - listitem [ref=e25]:
+            - generic [ref=e26]: Connector
+        - heading "Building the rooms senior creatives return to" [level=1] [ref=e27]
+        - paragraph [ref=e28]: Strategic partnerships, executive experiences, and a practice of recalibration — so creative ambition can scale without depletion.
+        - link "Start a conversation" [ref=e29] [cursor=pointer]:
+          - /url: "#contact"
+      - region "Featured in" [ref=e30]:
+        - generic [ref=e31]:
+          - paragraph [ref=e32]: "Featured In:"
+          - list [ref=e33]:
+            - listitem [ref=e34]:
+              - img "The New York Times" [ref=e35]
+            - listitem [ref=e36]:
+              - generic [ref=e37]: PRINT
+            - listitem [ref=e38]:
+              - img "Ad Age" [ref=e39]
+            - listitem [ref=e40]:
+              - img "Cannes Lions" [ref=e41]
+            - listitem [ref=e42]:
+              - img "ADCOLOR" [ref=e43]
+    - region "Adrienne L. Lucas" [ref=e44]:
+      - generic [ref=e45]:
+        - img "Adrienne L. Lucas, seated portrait" [ref=e48]
+        - generic [ref=e49]:
+          - paragraph [ref=e50]: Adrienne L. Lucas
+          - paragraph [ref=e51]:
+            - generic [ref=e52]: Communications Executive.
+            - generic [ref=e53]: Cultural Strategist.
+            - generic [ref=e54]: Entrepreneur.
+          - paragraph [ref=e55]: Fifteen years across communications, media, and law. Global Head of Strategic Partnerships at The One Club for Creativity, where she doubled the revenue and regional footprint of the flagship program. Founder of Auria Creative Well — the rooms senior creatives return to for clarity, performance, and excellence.
+  - button "Open Next.js Dev Tools" [ref=e61] [cursor=pointer]:
+    - img [ref=e62]
