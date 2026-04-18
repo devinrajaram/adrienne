@@ -10,7 +10,7 @@ const ROLES = ["Strategist", "Curator", "Connector"];
 
 const HEADLINE = "Building the rooms senior creatives return to";
 
-function heroEntranceVariants(reduceMotion: boolean) {
+export function heroEntranceVariants(reduceMotion: boolean) {
   if (reduceMotion) {
     return {
       column: {

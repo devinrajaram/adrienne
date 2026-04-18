@@ -1,11 +1,9 @@
-import { BioSection } from "./components/bio-section";
-import { Hero } from "./components/hero";
+import { HeroBioMorph } from "./components/hero-bio-morph";
 
 export default function Home() {
   return (
-    <main>
-      <Hero />
-      <BioSection />
+    <main className="relative">
+      <HeroBioMorph />
     </main>
   );
 }

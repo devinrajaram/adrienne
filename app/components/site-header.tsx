@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 
@@ -21,6 +22,7 @@ const linkClass =
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const reduceMotion = useReducedMotion();
   const instant = reduceMotion === true;
 
@@ -69,6 +71,16 @@ export function SiteHeader() {
         <Link
           href="/"
           aria-label="Adrienne L. Lucas — home"
+          onClick={(e) => {
+            e.preventDefault();
+            setOpen(false);
+            if (pathname === "/") {
+              window.scrollTo(0, 0);
+              window.location.reload();
+            } else {
+              window.location.assign("/");
+            }
+          }}
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap font-serif text-[clamp(1.6rem,2.5vw,2.55rem)] font-bold leading-none tracking-[-0.04em] text-ink-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm"
         >
           Adrienne L. Lucas
