@@ -13,9 +13,9 @@ export function BioSection() {
   return (
     <section
       aria-labelledby="bio-eyebrow"
-      className="bg-cream-200 py-16 sm:py-20 lg:py-24"
+      className="bg-cream-200 pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-24"
     >
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-12 px-6 sm:gap-16 sm:px-10 lg:flex-row lg:items-start lg:gap-24 lg:px-8 xl:gap-28 xl:px-10">
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-12 px-6 sm:gap-16 sm:px-10 lg:flex-row lg:items-start lg:gap-10 lg:px-8 xl:gap-12 xl:px-10">
         <div className="relative mx-auto w-full max-w-[501px] shrink-0 overflow-hidden rounded-t-[min(28vw,258px)] bg-white max-lg:mx-0 max-lg:ml-auto max-lg:mr-0 lg:mx-0 lg:ml-20 lg:mr-0 xl:ml-28">
           <div className="relative aspect-501/647 w-full">
             <Image
@@ -28,7 +28,7 @@ export function BioSection() {
           </div>
         </div>
 
-        <div className="min-w-0 flex-1 pt-0 lg:ml-6 lg:max-w-[600px] lg:pt-2 xl:ml-10 xl:max-w-[640px]">
+        <div className="min-w-0 flex-1 pt-0 lg:ml-0 lg:max-w-[600px] lg:pt-2 xl:max-w-[640px]">
           <p
             id="bio-eyebrow"
             className="text-[15px] font-semibold uppercase tracking-[0.18em] text-brick-600"

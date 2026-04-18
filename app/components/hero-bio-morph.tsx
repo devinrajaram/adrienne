@@ -32,10 +32,23 @@ const BIO =
  * Container = SCROLL_LENGTH_VH; sticky child = 100svh.
  * Net scroll travel for the morph = SCROLL_LENGTH_VH - 100 svh.
  */
-/** Shorter track so the #301712 block follows sooner after the morph (less cream-only scroll). */
-const SCROLL_LENGTH_VH = 200;
+/** Longer track so the final bio layout stays on screen for more scroll before the next section. */
+const SCROLL_LENGTH_VH = 235;
 const DARK_BAND_MAX_HEIGHT_PX = 280;
 const DARK_BAND_VIEWPORT_RATIO = 0.28;
+
+/** Fixed SiteHeader height — door + centered card must clear this. */
+const NAV_OFFSET_PX = 70;
+/** Breathing room below the nav for the centered/final door state. */
+const NAV_CLEARANCE_PX = 48;
+
+/**
+ * Viewport thresholds below which the morph is too cramped to land cleanly.
+ * Below either, we render static <Hero /> + <BioSection /> instead. The static
+ * layout already adapts to every size via flexbox + clamp typography.
+ */
+const MIN_MORPH_HEIGHT_PX = 760;
+const MIN_MORPH_WIDTH_PX = 768;
 
 /** Scroll progress: expand door over press → crop to card → slide to bio. */
 const P_COVER_PRESS_END = 0.14;
@@ -145,15 +158,36 @@ function doorGeometry(
 export function HeroBioMorph() {
   const reduceMotion = useReducedMotion();
   const [enabled, setEnabled] = useState(false);
+  /** Set true if MorphImpl's measurement reveals the layout can't fit. Sticky for the session to avoid flicker. */
+  const [cannotFit, setCannotFit] = useState(false);
 
   // Defer enabling the morph until after hydration so reduced-motion users
   // (and the SSR pass) get the static layout, no hydration mismatch.
+  // Also gate on viewport size — short or narrow viewports can't fit the
+  // morph's final layout cleanly, so they fall back to the static stack.
   useEffect(() => {
-    if (reduceMotion === true) return;
-    setEnabled(true);
+    if (reduceMotion === true) {
+      setEnabled(false);
+      return;
+    }
+
+    const fits = () =>
+      window.innerHeight >= MIN_MORPH_HEIGHT_PX &&
+      window.innerWidth >= MIN_MORPH_WIDTH_PX;
+
+    setEnabled(fits());
+
+    const onResize = () => {
+      const ok = fits();
+      setEnabled(ok);
+      // If the user resizes back up, give the morph another chance to measure.
+      if (ok) setCannotFit(false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, [reduceMotion]);
 
-  if (!enabled) {
+  if (!enabled || cannotFit) {
     return (
       <>
         <Hero />
@@ -162,10 +196,15 @@ export function HeroBioMorph() {
     );
   }
 
-  return <MorphImpl />;
+  return <MorphImpl onCannotFit={() => setCannotFit(true)} />;
 }
 
-function MorphImpl() {
+type MorphImplProps = {
+  /** Called when measurement reveals the viewport can't fit the morph cleanly. */
+  onCannotFit: () => void;
+};
+
+function MorphImpl({ onCannotFit }: MorphImplProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
   const heroAreaRef = useRef<HTMLDivElement>(null);
@@ -196,6 +235,9 @@ function MorphImpl() {
         DARK_BAND_MAX_HEIGHT_PX
       );
 
+      /** Door must clear nav at every state past the cover phase. */
+      const navFloor = NAV_OFFSET_PX + NAV_CLEARANCE_PX;
+
       /** Hero band only — press strip stays on cream below, same as `<Hero />`. */
       const heroLocal: Rect = {
         top: hRect.top - sRect.top,
@@ -210,9 +252,18 @@ function MorphImpl() {
         height: sRect.height,
       };
       const unclampedFinalTop = pRect.top - sRect.top;
-      const maxCardTop = Math.max(24, sRect.height - darkBandHeight - pRect.height);
+      const maxCardTop = sRect.height - darkBandHeight - pRect.height;
+
+      // If the bio portrait + dark band can't fit below the nav, the morph
+      // has nowhere to land cleanly. Fall back to static so the user still
+      // sees a coherent page instead of a clamped/overlapping mess.
+      if (maxCardTop < navFloor) {
+        onCannotFit();
+        return;
+      }
+
       const finalLocal: Rect = {
-        top: Math.min(unclampedFinalTop, maxCardTop),
+        top: Math.max(navFloor, Math.min(unclampedFinalTop, maxCardTop)),
         left: pRect.left - sRect.left,
         width: pRect.width,
         height: pRect.height,
@@ -222,15 +273,18 @@ function MorphImpl() {
         height: finalLocal.height,
         left: (sRect.width - finalLocal.width) / 2,
         top: Math.max(
-          24,
-          Math.min(
-            (sRect.height - finalLocal.height) / 2,
-            maxCardTop
-          )
+          navFloor,
+          Math.min((sRect.height - finalLocal.height) / 2, maxCardTop)
         ),
       };
 
-      const finalRadius = Math.min(0.28 * window.innerWidth, 258);
+      // Radius scales by both axes — a 258px arch on a 600px-tall door
+      // eats half the portrait, so cap by height too.
+      const finalRadius = Math.min(
+        0.28 * window.innerWidth,
+        0.4 * window.innerHeight,
+        258
+      );
 
       setM({
         hero: heroLocal,
@@ -331,8 +385,9 @@ function MorphImpl() {
   );
 
   // ── Bio reveal ────────────────────────────────────────────────────────────
-  const bioTextOpacity = useTransform(progress, [0.78, 0.95], [0, 1]);
-  const bioTextY = useTransform(progress, [0.78, 1.0], [16, 0]);
+  /** Tighter p-range = copy reaches full opacity sooner (snappier in); longer SCROLL_LENGTH_VH adds dwell after. */
+  const bioTextOpacity = useTransform(progress, [0.72, 0.86], [0, 1]);
+  const bioTextY = useTransform(progress, [0.72, 0.86], [14, 0]);
 
   /** Fills the cream gap below the bio row inside the sticky viewport. */
   const darkBandOpacity = useTransform(progress, [0.76, 0.9], [0, 1]);
@@ -359,17 +414,20 @@ function MorphImpl() {
         </div>
 
         {/* Bio layout — z above dark band (z-14) so copy isn’t painted over; below door (z-20) + hero clip (z-30). */}
-        <div className="pointer-events-none absolute inset-0 z-16 mx-auto flex max-w-[1400px] flex-col gap-12 px-6 pt-24 pb-0 sm:gap-16 sm:px-10 sm:pt-28 lg:flex-row lg:items-start lg:gap-24 lg:px-8 lg:pt-36 xl:gap-28 xl:px-10">
+        <div className="pointer-events-none absolute inset-0 z-16 mx-auto flex max-w-[1400px] flex-col gap-12 px-6 pt-32 pb-0 sm:gap-16 sm:px-10 sm:pt-36 lg:flex-row lg:items-start lg:gap-10 lg:px-8 lg:pt-40 xl:gap-12 xl:px-10 xl:pt-44">
           <div
             ref={portraitGhostRef}
             aria-hidden
-            className="invisible relative mx-auto w-full max-w-[501px] shrink-0 max-lg:mx-0 max-lg:ml-auto max-lg:mr-0 lg:mx-0 lg:ml-20 lg:mr-0 xl:ml-28"
+            // Cap by viewport height: portrait is 501:647 (≈1.291 ratio).
+            // Reserve ~410px for nav + top padding + dark band + breathing room
+            // so the ghost (and final door) always fit inside one viewport.
+            className="invisible relative mx-auto w-full max-w-[min(501px,calc((100svh-410px)/1.291))] shrink-0 max-lg:mx-0 max-lg:ml-auto max-lg:mr-0 lg:mx-0 lg:ml-20 lg:mr-0 xl:ml-28"
           >
             <div className="relative aspect-501/647 w-full" />
           </div>
 
           <motion.div
-            className="relative z-30 pointer-events-auto min-w-0 flex-1 pt-0 lg:ml-6 lg:max-w-[600px] lg:pt-2 xl:ml-10 xl:max-w-[640px]"
+            className="relative z-30 pointer-events-auto min-w-0 flex-1 pt-0 lg:ml-0 lg:max-w-[600px] lg:pt-2 xl:max-w-[640px]"
             style={{ opacity: bioTextOpacity, y: bioTextY }}
           >
             <p
