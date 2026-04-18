@@ -16,14 +16,14 @@ export function BioSection() {
       className="bg-cream-200 py-16 sm:py-20 lg:py-24"
     >
       <div className="mx-auto flex max-w-[1400px] flex-col gap-12 px-6 sm:gap-16 sm:px-10 lg:flex-row lg:items-start lg:gap-24 lg:px-8 xl:gap-28 xl:px-10">
-        <div className="relative mx-auto w-full max-w-[501px] shrink-0 overflow-hidden rounded-t-[min(28vw,258px)] bg-white lg:mx-0">
+        <div className="relative mx-auto w-full max-w-[501px] shrink-0 overflow-hidden rounded-t-[min(28vw,258px)] bg-white max-lg:mx-0 max-lg:ml-auto max-lg:mr-0 lg:mx-0 lg:ml-20 lg:mr-0 xl:ml-28">
           <div className="relative aspect-501/647 w-full">
             <Image
-              src="/images/adrienne.webp"
+              src="/images/ad.png"
               alt="Adrienne L. Lucas, seated portrait"
               fill
               sizes="(max-width: 1024px) 100vw, 501px"
-              className="object-cover object-[50%_34%] scale-[1.22]"
+              className="object-cover object-center"
             />
           </div>
         </div>

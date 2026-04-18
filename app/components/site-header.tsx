@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "motion/react";
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+} from "motion/react";
 import { useEffect, useState } from "react";
 
 import { EASE_NAV, INTRO_DELAY } from "./intro-motion";
@@ -20,11 +26,60 @@ const NAV_RIGHT = [
 const linkClass =
   "text-[15px] font-medium uppercase tracking-[0.18em] text-ink-700 transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm";
 
+/**
+ * Cream bar fades in over the same scroll window the morph uses to fill in
+ * the dark band (progress 0.76 → 0.92 of the 200svh morph track).
+ * One vh of scroll ≈ one progress unit / 1.0, so the window in pixels is:
+ *   start = innerHeight * 0.76, end = innerHeight * 0.92
+ */
+const SCROLL_START_VH = 0.76;
+const SCROLL_END_VH = 0.92;
+
+/** --cream-200; max alpha keeps the bar slightly translucent over content below. */
+const CREAM_BAR_MAX_ALPHA = 0.88;
+
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const reduceMotion = useReducedMotion();
   const instant = reduceMotion === true;
+
+  const scrollProgress = useMotionValue(0);
+
+  useEffect(() => {
+    let raf = 0;
+    const compute = () => {
+      const vh = window.innerHeight || 1;
+      const start = vh * SCROLL_START_VH;
+      const end = vh * SCROLL_END_VH;
+      const y = window.scrollY;
+      const p = Math.max(0, Math.min(1, (y - start) / (end - start)));
+      scrollProgress.set(p);
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(compute);
+    };
+    compute();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [scrollProgress]);
+
+  const bgAlpha = useTransform(
+    scrollProgress,
+    [0, 1],
+    [0, CREAM_BAR_MAX_ALPHA]
+  );
+  const backgroundColor = useMotionTemplate`rgba(244, 234, 210, ${bgAlpha})`;
+  const backdropFilter = useTransform(scrollProgress, [0, 1], [
+    "blur(0px)",
+    "blur(10px)",
+  ]);
 
   useEffect(() => {
     if (!open) return;
@@ -41,7 +96,12 @@ export function SiteHeader() {
 
   return (
     <motion.header
-      className="absolute inset-x-0 top-0 z-20 will-change-transform"
+      className="fixed inset-x-0 top-0 z-50 will-change-transform"
+      style={{
+        backgroundColor,
+        backdropFilter,
+        WebkitBackdropFilter: backdropFilter,
+      }}
       initial={
         instant
           ? { opacity: 1, y: 0 }

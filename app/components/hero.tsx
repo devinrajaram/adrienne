@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { EASE_HERO_OPACITY, HERO_STAGGER } from "./intro-motion";
 import { PressLogos } from "./press-logos";
-import { SiteHeader } from "./site-header";
 
 const ROLES = ["Strategist", "Curator", "Connector"];
 
@@ -87,8 +86,6 @@ export function Hero() {
             />
           ) : null}
         </div>
-
-        <SiteHeader />
 
         <motion.div
           className="relative mx-auto flex w-full max-w-[1400px] flex-1 flex-col items-center justify-center px-6 pt-[120px] pb-12 text-center sm:px-10 sm:pt-[140px] sm:pb-16 lg:pt-[160px]"

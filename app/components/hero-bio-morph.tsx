@@ -13,7 +13,6 @@ import { useEffect, useRef, useState } from "react";
 import { BioSection } from "./bio-section";
 import { Hero, heroEntranceVariants } from "./hero";
 import { PressLogos } from "./press-logos";
-import { SiteHeader } from "./site-header";
 
 const ROLES = ["Strategist", "Curator", "Connector"] as const;
 const HEADLINE = "Building the rooms senior creatives return to";
@@ -35,6 +34,8 @@ const BIO =
  */
 /** Shorter track so the #301712 block follows sooner after the morph (less cream-only scroll). */
 const SCROLL_LENGTH_VH = 200;
+const DARK_BAND_MAX_HEIGHT_PX = 280;
+const DARK_BAND_VIEWPORT_RATIO = 0.28;
 
 /** Scroll progress: expand door over press → crop to card → slide to bio. */
 const P_COVER_PRESS_END = 0.14;
@@ -190,6 +191,10 @@ function MorphImpl() {
       const sRect = sticky.getBoundingClientRect();
       const hRect = heroArea.getBoundingClientRect();
       const pRect = portraitGhost.getBoundingClientRect();
+      const darkBandHeight = Math.min(
+        sRect.height * DARK_BAND_VIEWPORT_RATIO,
+        DARK_BAND_MAX_HEIGHT_PX
+      );
 
       /** Hero band only — press strip stays on cream below, same as `<Hero />`. */
       const heroLocal: Rect = {
@@ -204,8 +209,10 @@ function MorphImpl() {
         width: sRect.width,
         height: sRect.height,
       };
+      const unclampedFinalTop = pRect.top - sRect.top;
+      const maxCardTop = Math.max(24, sRect.height - darkBandHeight - pRect.height);
       const finalLocal: Rect = {
-        top: pRect.top - sRect.top,
+        top: Math.min(unclampedFinalTop, maxCardTop),
         left: pRect.left - sRect.left,
         width: pRect.width,
         height: pRect.height,
@@ -218,7 +225,7 @@ function MorphImpl() {
           24,
           Math.min(
             (sRect.height - finalLocal.height) / 2,
-            sRect.height - finalLocal.height - 40
+            maxCardTop
           )
         ),
       };
@@ -331,12 +338,11 @@ function MorphImpl() {
   const darkBandOpacity = useTransform(progress, [0.76, 0.9], [0, 1]);
 
   return (
-    <section aria-label="Introduction" className="relative">
-      {/* Scroll track only — dark band follows immediately after in the DOM so
-          it sits flush under the bio (no extra cream gap below the morph). */}
+    <section aria-label="Introduction" className="relative isolate">
+      {/* Scroll track: z-40 + isolate keeps the sticky morph above the in-flow brown block (sibling), which otherwise paints later and can cover the portrait. */}
       <div
         ref={containerRef}
-        className="relative bg-cream-200"
+        className="relative z-40 bg-cream-200"
         style={{ height: `${SCROLL_LENGTH_VH}svh` }}
       >
       <div
@@ -352,12 +358,12 @@ function MorphImpl() {
           </motion.div>
         </div>
 
-        {/* Bio layout — invisible portrait ghost + bio copy for final morph. */}
-        <div className="pointer-events-none absolute inset-0 z-12 mx-auto flex max-w-[1400px] flex-col gap-12 px-6 pt-16 pb-6 sm:gap-16 sm:px-10 sm:pt-20 sm:pb-8 lg:flex-row lg:items-start lg:gap-24 lg:px-8 lg:pt-24 lg:pb-10 xl:gap-28 xl:px-10">
+        {/* Bio layout — z above dark band (z-14) so copy isn’t painted over; below door (z-20) + hero clip (z-30). */}
+        <div className="pointer-events-none absolute inset-0 z-16 mx-auto flex max-w-[1400px] flex-col gap-12 px-6 pt-24 pb-0 sm:gap-16 sm:px-10 sm:pt-28 lg:flex-row lg:items-start lg:gap-24 lg:px-8 lg:pt-36 xl:gap-28 xl:px-10">
           <div
             ref={portraitGhostRef}
             aria-hidden
-            className="invisible relative mx-auto w-full max-w-[501px] shrink-0 lg:mx-0"
+            className="invisible relative mx-auto w-full max-w-[501px] shrink-0 max-lg:mx-0 max-lg:ml-auto max-lg:mr-0 lg:mx-0 lg:ml-20 lg:mr-0 xl:ml-28"
           >
             <div className="relative aspect-501/647 w-full" />
           </div>
@@ -427,11 +433,11 @@ function MorphImpl() {
             style={{ opacity: portraitOpacity }}
           >
             <Image
-              src="/images/adrienne.webp"
+              src="/images/ad.png"
               alt="Adrienne L. Lucas, seated portrait"
               fill
               sizes="(max-width: 1024px) 100vw, 501px"
-              className="object-cover object-[50%_34%] scale-[1.22]"
+              className="block object-cover object-center"
               priority
             />
           </motion.div>
@@ -498,23 +504,18 @@ function MorphImpl() {
           </motion.div>
         </motion.div>
 
-        {/* Sits in the empty band below the bio row (same viewport as portrait). */}
+        {/* In-sticky band */}
         <motion.div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 bottom-0 z-14 min-h-[min(28vh,280px)] bg-[#301712]"
           style={{ opacity: darkBandOpacity }}
         />
-
-        {/* Above hero clip (z-30) so nav stays interactive. */}
-        <div className="absolute inset-x-0 top-0 z-40">
-          <SiteHeader />
-        </div>
       </div>
       </div>
 
-      {/* Continues the band in document flow once the morph track scrolls away. */}
+      {/* In-flow brown — z-0 so morph track (z-40) always stacks above when viewport overlap occurs */}
       <section
-        className="min-h-[min(50vh,520px)] bg-[#301712] pb-20 pt-0 md:pb-28"
+        className="relative z-0 min-h-[min(50vh,520px)] bg-[#301712] pb-20 pt-0 md:pb-28"
         aria-hidden
       />
     </section>
