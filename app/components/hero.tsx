@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { EASE_HERO_OPACITY, HERO_STAGGER } from "./intro-motion";
@@ -75,14 +74,18 @@ export function Hero() {
     >
       <div className="relative isolate flex min-h-0 flex-1 flex-col bg-haze-300">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-          <Image
-            src="/images/hero-haze.jpg"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
+          {!instant ? (
+            <video
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-1/2 block h-auto w-auto min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 scale-[1.12] object-cover object-center"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              src="/video/vid2.mp4"
+            />
+          ) : null}
         </div>
 
         <SiteHeader />
