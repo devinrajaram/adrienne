@@ -510,17 +510,22 @@ function MorphImpl() {
   const bioTextOpacity = useTransform(progress, [0.72, 0.86], [0, 1]);
   const bioTextY = useTransform(progress, [0.72, 0.86], [14, 0]);
 
-  /** Fills the cream gap below the bio row inside the sticky viewport. */
-  const darkBandOpacity = useTransform(progress, [0.76, 0.9], [0, 1]);
-
   /**
-   * Practice section is pulled up by `PRACTICE_GAP_PX` so its dark bg overlaps
-   * the sticky's lower portion. Fading it in alongside the dark band prevents
-   * its solid `ink-950` from peeking into the viewport bottom while the bio
-   * is still settling. Matches `darkBandOpacity` window so the two transitions
-   * read as one continuous fill.
+   * Shared dark-fill strength for the bio→practice transition. Drives both the
+   * in-sticky dark band AND an inverted cream overlay that sits INSIDE the
+   * PracticeSection wrapper (see `fillCoverOpacity`). PracticeSection itself
+   * stays fully opaque — stacking two fading dark layers would double the
+   * opacity in the overlap region and produce visible tonal seams. Using one
+   * fading band + one inverted cream cover ensures every pixel in the fill
+   * region renders as `cream × (1−α) + dark × α` at every frame.
    */
-  const practiceOpacity = useTransform(progress, [0.76, 0.9], [0, 1]);
+  const fillOpacity = useTransform(progress, (p) =>
+    easedProgress(p, 0.72, 0.94)
+  );
+  /** Inverse of `fillOpacity` — covers PracticeSection with sticky-matching cream during the fade. */
+  const fillCoverOpacity = useTransform(progress, (p) =>
+    1 - easedProgress(p, 0.72, 0.94)
+  );
 
   return (
     <section aria-label="Introduction" className="relative isolate">
@@ -715,24 +720,24 @@ function MorphImpl() {
           </motion.div>
         </motion.div>
 
-        {/* In-sticky band — top edge tracks arch bottom on lg; stacked layouts use max(portrait, bio). */}
+        {/* In-sticky band — top edge tracks arch bottom on lg; stacked layouts use max(portrait, bio).
+            Fills all the way to the sticky bottom so no cream stripe leaks during the stuck
+            phase (PracticeSection doesn't reach its final position until unstick). The
+            overlap with PracticeSection is safe because PracticeSection is fully opaque
+            and has an inverted cream overlay that visually matches this band's fade. */}
         <motion.div
           aria-hidden
           data-dark-band
           className="pointer-events-none absolute inset-x-0 z-14 bg-[#301712]"
           style={{
-            opacity: darkBandOpacity,
+            opacity: fillOpacity,
             ...(m
               ? (() => {
                   const clampedTop = Math.max(
                     0,
                     Math.min(m.darkBandTopPx, m.stickyFull.height - 2)
                   );
-                  return {
-                    top: clampedTop,
-                    bottom: 0,
-                    height: "auto",
-                  };
+                  return { top: clampedTop, bottom: 0, height: "auto" };
                 })()
               : { top: "100%", bottom: 0, height: 0 }),
           }}
@@ -744,9 +749,10 @@ function MorphImpl() {
           never hidden by the sticky's dark band during the overlap. The
           negative margin pulls Practice up so the bio bottom → PracticeSection
           top distance is `PRACTICE_GAP_PX` regardless of viewport height —
-          fixes the gap that previously grew with `100dvh`. Opacity fades in
-          with the dark band so Practice doesn't peek mid-morph. */}
-      <motion.div
+          fixes the gap that previously grew with `100dvh`. PracticeSection is
+          fully opaque; the reveal is driven by the cream overlay below, whose
+          fade mirrors the dark band so both regions read as a single wash. */}
+      <div
         className="relative z-50"
         style={{
           marginTop: m
@@ -755,11 +761,20 @@ function MorphImpl() {
                 m.darkBandTopPx + PRACTICE_GAP_PX - m.stickyFull.height
               )
             : 0,
-          opacity: practiceOpacity,
         }}
       >
         <PracticeSection />
-      </motion.div>
+        {/* Sticky-matching cream cover. Opacity is the inverse of `fillOpacity`
+            so at every frame: cream*(1−α) + dark*α — identical to the dark
+            band region. No tonal seam between the sticky-bottom fill and the
+            practice-section fill during the reveal. `inset-0` scopes it to the
+            wrapper so it fades out completely before the cards scroll in. */}
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-1 bg-cream-200"
+          style={{ opacity: fillCoverOpacity }}
+        />
+      </div>
     </section>
   );
 }
