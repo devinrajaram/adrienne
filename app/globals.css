@@ -16,6 +16,14 @@
   --haze-300: #d8a886;
   --brick-600: #9e2616;
 
+  /* Dark "practice" palette — sourced from Figma node 41:29 */
+  --ink-950: #301712;
+  --ink-925: #391c16;
+  --ember-100: #ffcabf;
+  --ember-50: #ffbeaf;
+  --clay-300: #ca9a90;
+  --rust-400: #cb7463;
+
   --font-times: "Times New Roman", Times, "Liberation Serif", "DejaVu Serif",
     Georgia, "Noto Serif", serif;
 }
@@ -29,6 +37,12 @@
   --color-cream-200: var(--cream-200);
   --color-haze-300: var(--haze-300);
   --color-brick-600: var(--brick-600);
+  --color-ink-950: var(--ink-950);
+  --color-ink-925: var(--ink-925);
+  --color-ember-100: var(--ember-100);
+  --color-ember-50: var(--ember-50);
+  --color-clay-300: var(--clay-300);
+  --color-rust-400: var(--rust-400);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-times);

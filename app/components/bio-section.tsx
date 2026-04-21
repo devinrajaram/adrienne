@@ -23,7 +23,8 @@ export function BioSection() {
               alt="Adrienne L. Lucas, seated portrait"
               fill
               sizes="(max-width: 1024px) 100vw, 501px"
-              className="object-cover object-center"
+              className="select-none object-cover object-center"
+              draggable={false}
             />
           </div>
         </div>

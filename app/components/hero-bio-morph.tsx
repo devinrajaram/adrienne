@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { BioSection } from "./bio-section";
 import { Hero, heroEntranceVariants } from "./hero";
+import { PracticeSection } from "./practice-section";
 import { PressLogos } from "./press-logos";
 
 const ROLES = ["Strategist", "Curator", "Connector"] as const;
@@ -28,26 +29,49 @@ const BIO =
   "Fifteen years across communications, media, and law. Global Head of Strategic Partnerships at The One Club for Creativity, where she doubled the revenue and regional footprint of the flagship program. Founder of Auria Creative Well — the rooms senior creatives return to for clarity, performance, and excellence.";
 
 /**
- * Total scroll length of the morph in svh.
- * Container = SCROLL_LENGTH_VH; sticky child = 100svh.
- * Net scroll travel for the morph = SCROLL_LENGTH_VH - 100 svh.
+ * Total scroll length of the morph in dvh (dynamic viewport).
+ * Container = SCROLL_LENGTH_VH dvh; sticky child = 100dvh.
+ * JS progress uses the laid-out sticky height (≈100dvh) so scrub range matches paint.
  */
-/** Longer track so the final bio layout stays on screen for more scroll before the next section. */
-const SCROLL_LENGTH_VH = 235;
-const DARK_BAND_MAX_HEIGHT_PX = 280;
-const DARK_BAND_VIEWPORT_RATIO = 0.28;
+/**
+ * Scroll track height in dvh. Lower = less empty tail after the sticky scrubs out (logs: sectionTop was
+ * hundreds of px while gapHeadingMinusSection stayed ~80 — gap is morph tail, not practice padding).
+ */
+const SCROLL_LENGTH_VH = 175;
+
+/**
+ * Dark band fills from `darkBandTopPx` to the bottom of the sticky so it
+ * butts directly against the in-flow PracticeSection (same `#301712`). Capping
+ * the height left a visible cream-200 stripe (the sticky's bg) below the band
+ * on tall viewports, which read as a growing gap before the practice heading.
+ */
+
+/**
+ * Visual gap (px) between the bio bottom and the top edge of PracticeSection.
+ * Without pulling Practice up, the gap = (100dvh − bioBottom) which grows with
+ * viewport height. We negative-margin Practice so this stays fixed at every
+ * viewport. Combined with PracticeSection's own pt-12 (48px on lg), the bio
+ * bottom → heading distance is ~72px on every screen.
+ */
+const PRACTICE_GAP_PX = 24;
 
 /** Fixed SiteHeader height — door + centered card must clear this. */
 const NAV_OFFSET_PX = 70;
-/** Breathing room below the nav for the centered/final door state. */
-const NAV_CLEARANCE_PX = 48;
+/** Breathing room below the nav for the centered/final door state (layout measure). */
+const NAV_CLEARANCE_PX = 36;
+/** Gap below fixed header for bio stack (top-aligned; do not viewport-center the whole row or tall screens get a false “gap”). */
+const BIO_STACK_TOP_GAP_PX = 10;
 
 /**
- * Viewport thresholds below which the morph is too cramped to land cleanly.
- * Below either, we render static <Hero /> + <BioSection /> instead. The static
- * layout already adapts to every size via flexbox + clamp typography.
+ * Width threshold below which we fall back to static. The morph's bio layout
+ * is desktop-only (lg:flex-row), so on narrow viewports the static stack
+ * already gives a better experience.
+ *
+ * No height gate: the final portrait stays a fixed size at every viewport
+ * height, with padding above protecting it from the nav. On short displays
+ * the bottom of the portrait may clip into the dark band — that's intended,
+ * and it keeps the visual scale consistent across devices.
  */
-const MIN_MORPH_HEIGHT_PX = 760;
 const MIN_MORPH_WIDTH_PX = 768;
 
 /** Scroll progress: expand door over press → crop to card → slide to bio. */
@@ -76,6 +100,10 @@ type Measurements = {
   final: Rect;
   /** Top corner radius for the door at final state. */
   finalRadius: number;
+  /** Distance from sticky top to dark band top (px). */
+  darkBandTopPx: number;
+  /** lg row: cap bio copy to portrait column height so brown can start at arch bottom. */
+  bioColumnMaxHeightPx: number | null;
 };
 
 /** Piecewise-linear interpolator over (progress → value) keyframes. */
@@ -158,57 +186,52 @@ function doorGeometry(
 export function HeroBioMorph() {
   const reduceMotion = useReducedMotion();
   const [enabled, setEnabled] = useState(false);
-  /** Set true if MorphImpl's measurement reveals the layout can't fit. Sticky for the session to avoid flicker. */
-  const [cannotFit, setCannotFit] = useState(false);
 
   // Defer enabling the morph until after hydration so reduced-motion users
   // (and the SSR pass) get the static layout, no hydration mismatch.
-  // Also gate on viewport size — short or narrow viewports can't fit the
-  // morph's final layout cleanly, so they fall back to the static stack.
+  // Width gate only — the morph is desktop-shaped (side-by-side bio), so
+  // narrow viewports get the stacked static layout. Height has no gate; the
+  // final portrait stays fixed-size at every viewport height (see comment
+  // on MIN_MORPH_WIDTH_PX).
   useEffect(() => {
     if (reduceMotion === true) {
       setEnabled(false);
       return;
     }
 
-    const fits = () =>
-      window.innerHeight >= MIN_MORPH_HEIGHT_PX &&
-      window.innerWidth >= MIN_MORPH_WIDTH_PX;
+    const fits = () => window.innerWidth >= MIN_MORPH_WIDTH_PX;
 
     setEnabled(fits());
 
-    const onResize = () => {
-      const ok = fits();
-      setEnabled(ok);
-      // If the user resizes back up, give the morph another chance to measure.
-      if (ok) setCannotFit(false);
-    };
+    const onResize = () => setEnabled(fits());
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, [reduceMotion]);
 
-  if (!enabled || cannotFit) {
+  if (!enabled) {
     return (
       <>
         <Hero />
         <BioSection />
+        <div className="relative z-0">
+          <PracticeSection />
+        </div>
       </>
     );
   }
 
-  return <MorphImpl onCannotFit={() => setCannotFit(true)} />;
+  return <MorphImpl />;
 }
 
-type MorphImplProps = {
-  /** Called when measurement reveals the viewport can't fit the morph cleanly. */
-  onCannotFit: () => void;
-};
+/** Tailwind `lg` breakpoint — matches bio `lg:flex-row`. */
+const LG_ROW_MIN_PX = 1024;
 
-function MorphImpl({ onCannotFit }: MorphImplProps) {
+function MorphImpl() {
   const containerRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
   const heroAreaRef = useRef<HTMLDivElement>(null);
   const portraitGhostRef = useRef<HTMLDivElement>(null);
+  const bioTextColumnRef = useRef<HTMLDivElement>(null);
 
   const reduceMotion = useReducedMotion();
   const instant = reduceMotion === true;
@@ -220,6 +243,21 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
 
   useEffect(() => {
     let raf = 0;
+    /** Laid-out height of the morph scroll track (`SCROLL_LENGTH_VH dvh`). When dvh changes, doc length changes; compensate scroll so content below (e.g. Practice) stays stable. */
+    let lastMorphTrackHeight: number | null = null;
+
+    const syncMorphTrackScroll = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const h = el.getBoundingClientRect().height;
+      const prev = lastMorphTrackHeight;
+      if (prev != null && Math.abs(h - prev) > 0.5) {
+        const dh = h - prev;
+        const scrollBefore = window.scrollY;
+        window.scrollTo(0, scrollBefore + dh);
+      }
+      lastMorphTrackHeight = h;
+    };
 
     const measure = () => {
       const sticky = stickyRef.current;
@@ -230,10 +268,6 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
       const sRect = sticky.getBoundingClientRect();
       const hRect = heroArea.getBoundingClientRect();
       const pRect = portraitGhost.getBoundingClientRect();
-      const darkBandHeight = Math.min(
-        sRect.height * DARK_BAND_VIEWPORT_RATIO,
-        DARK_BAND_MAX_HEIGHT_PX
-      );
 
       /** Door must clear nav at every state past the cover phase. */
       const navFloor = NAV_OFFSET_PX + NAV_CLEARANCE_PX;
@@ -251,19 +285,13 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
         width: sRect.width,
         height: sRect.height,
       };
-      const unclampedFinalTop = pRect.top - sRect.top;
-      const maxCardTop = sRect.height - darkBandHeight - pRect.height;
 
-      // If the bio portrait + dark band can't fit below the nav, the morph
-      // has nowhere to land cleanly. Fall back to static so the user still
-      // sees a coherent page instead of a clamped/overlapping mess.
-      if (maxCardTop < navFloor) {
-        onCannotFit();
-        return;
-      }
+      // The portrait ghost (laid out via flex + max-w-[501px]) drives the
+      // final position and size at every viewport.
+      const unclampedFinalTop = pRect.top - sRect.top;
 
       const finalLocal: Rect = {
-        top: Math.max(navFloor, Math.min(unclampedFinalTop, maxCardTop)),
+        top: Math.max(navFloor, unclampedFinalTop),
         left: pRect.left - sRect.left,
         width: pRect.width,
         height: pRect.height,
@@ -272,19 +300,27 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
         width: finalLocal.width,
         height: finalLocal.height,
         left: (sRect.width - finalLocal.width) / 2,
-        top: Math.max(
-          navFloor,
-          Math.min((sRect.height - finalLocal.height) / 2, maxCardTop)
-        ),
+        top: Math.max(navFloor, (sRect.height - finalLocal.height) / 2),
       };
 
-      // Radius scales by both axes — a 258px arch on a 600px-tall door
-      // eats half the portrait, so cap by height too.
-      const finalRadius = Math.min(
-        0.28 * window.innerWidth,
-        0.4 * window.innerHeight,
-        258
-      );
+      // Radius scales by width only now — door height is fixed (portrait
+      // height), so we don't need a height-based clamp.
+      const finalRadius = Math.min(0.28 * window.innerWidth, 258);
+
+      const isLgRow = window.matchMedia(`(min-width: ${LG_ROW_MIN_PX}px)`).matches;
+      const portraitBottomInSticky = pRect.bottom - sRect.top;
+      /** Matches painted door bottom (nav clamp can push door below the flex ghost). */
+      const doorBottomInSticky = finalLocal.top + finalLocal.height;
+      const bioEl = bioTextColumnRef.current;
+      const bioRect = bioEl?.getBoundingClientRect();
+      const bioBottomInSticky = bioRect
+        ? bioRect.bottom - sRect.top
+        : portraitBottomInSticky;
+      // Align brown to the *door* bottom so it never cuts the arch when finalLocal.top > ghost top.
+      const darkBandTopPx = isLgRow
+        ? doorBottomInSticky
+        : Math.max(portraitBottomInSticky, bioBottomInSticky, doorBottomInSticky);
+      const bioColumnMaxHeightPx = isLgRow ? pRect.height : null;
 
       setM({
         hero: heroLocal,
@@ -292,14 +328,24 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
         centered: centeredLocal,
         final: finalLocal,
         finalRadius,
+        darkBandTopPx,
+        bioColumnMaxHeightPx,
       });
     };
 
     const updateProgress = () => {
       const container = containerRef.current;
-      if (!container) return;
+      const sticky = stickyRef.current;
+      if (!container || !sticky) return;
       const rect = container.getBoundingClientRect();
-      const total = rect.height - window.innerHeight;
+      const innerH = window.innerHeight;
+      const vvH = window.visualViewport?.height ?? innerH;
+      const stickyH = sticky.getBoundingClientRect().height;
+      const viewportForTotal =
+        Number.isFinite(stickyH) && stickyH > 1
+          ? stickyH
+          : vvH;
+      const total = rect.height - viewportForTotal;
       if (total <= 0) {
         progress.set(0);
         return;
@@ -311,24 +357,99 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
 
     const onScroll = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(updateProgress);
-    };
-    const onResize = () => {
-      cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        measure();
         updateProgress();
+        requestAnimationFrame(measure);
       });
     };
 
-    measure();
-    updateProgress();
+    /** After dvh/track/sticky height changes, total = trackH − stickyH changes; keep the same scrub progress so the morph + spacing don't jump. */
+    const preserveProgressAfterResize = (pTarget: number) => {
+      const container = containerRef.current;
+      const sticky = stickyRef.current;
+      if (!container || !sticky) return;
+      const rect = container.getBoundingClientRect();
+      const stickyH = sticky.getBoundingClientRect().height;
+      const vvH = window.visualViewport?.height ?? window.innerHeight;
+      const viewportForTotal =
+        Number.isFinite(stickyH) && stickyH > 1 ? stickyH : vvH;
+      const total = rect.height - viewportForTotal;
+      if (total <= 0) return;
+      const scrolled = -rect.top;
+      // p clamps to 1 while scrolled can exceed total (user in practice / below morph).
+      // Never scroll upward to force scrolled === total — that creates the huge cream/dark gap.
+      if (pTarget >= 0.999 && scrolled > total + 0.5) return;
+      const delta = pTarget * total - scrolled;
+      if (Math.abs(delta) <= 0.5) return;
+      window.scrollTo(0, window.scrollY + delta);
+    };
+
+    const runLayout = () => {
+      const container = containerRef.current;
+      const sticky = stickyRef.current;
+      let pBefore = progress.get();
+      let scrolledPastMorphEnd = false;
+      if (container && sticky) {
+        const rect0 = container.getBoundingClientRect();
+        const sh0 = sticky.getBoundingClientRect().height;
+        const vv0 = window.visualViewport?.height ?? window.innerHeight;
+        const vft0 = Number.isFinite(sh0) && sh0 > 1 ? sh0 : vv0;
+        const total0 = rect0.height - vft0;
+        if (total0 > 0) {
+          const sc0 = -rect0.top;
+          pBefore = Math.max(0, Math.min(1, sc0 / total0));
+          scrolledPastMorphEnd = sc0 > total0 + 0.5;
+        }
+      }
+
+      syncMorphTrackScroll();
+      progress.set(pBefore);
+      if (!scrolledPastMorphEnd) {
+        preserveProgressAfterResize(pBefore);
+      }
+      updateProgress();
+      measure();
+      requestAnimationFrame(measure);
+    };
+
+    const onResize = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(runLayout);
+    };
+
+    const onVisualViewportResize = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(runLayout);
+    };
+
+    runLayout();
+
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(runLayout);
+    });
+    const pg = portraitGhostRef.current;
+    const bioCol = bioTextColumnRef.current;
+    if (pg) ro.observe(pg);
+    if (bioCol) ro.observe(bioCol);
+
+    const track = containerRef.current;
+    const trackRo = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(runLayout);
+    });
+    if (track) trackRo.observe(track);
+
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
+    window.visualViewport?.addEventListener("resize", onVisualViewportResize);
     return () => {
+      ro.disconnect();
+      trackRo.disconnect();
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
+      window.visualViewport?.removeEventListener("resize", onVisualViewportResize);
     };
   }, [progress]);
 
@@ -392,17 +513,32 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
   /** Fills the cream gap below the bio row inside the sticky viewport. */
   const darkBandOpacity = useTransform(progress, [0.76, 0.9], [0, 1]);
 
+  /**
+   * Practice section is pulled up by `PRACTICE_GAP_PX` so its dark bg overlaps
+   * the sticky's lower portion. Fading it in alongside the dark band prevents
+   * its solid `ink-950` from peeking into the viewport bottom while the bio
+   * is still settling. Matches `darkBandOpacity` window so the two transitions
+   * read as one continuous fill.
+   */
+  const practiceOpacity = useTransform(progress, [0.76, 0.9], [0, 1]);
+
   return (
     <section aria-label="Introduction" className="relative isolate">
       {/* Scroll track: z-40 + isolate keeps the sticky morph above the in-flow brown block (sibling), which otherwise paints later and can cover the portrait. */}
       <div
         ref={containerRef}
-        className="relative z-40 bg-cream-200"
-        style={{ height: `${SCROLL_LENGTH_VH}svh` }}
+        data-morph-scroll-track
+        className="relative z-40"
+        style={{
+          height: `${SCROLL_LENGTH_VH}dvh`,
+          /* Long bottom fade to ink-950: fills scroll tail with practice-colored field (cannot pull practice up with negative margin — z-40 covers heading). */
+          background:
+            "linear-gradient(180deg, var(--cream-200) 0%, var(--cream-200) max(0%, calc(100% - min(58dvh, 640px))), var(--ink-950) 100%)",
+        }}
       >
       <div
         ref={stickyRef}
-        className="sticky top-0 h-svh w-full overflow-hidden bg-cream-200"
+        className="sticky top-0 h-dvh w-full overflow-hidden bg-cream-200"
       >
         {/* Hero / press stack — matches static Hero at p=0. Once scroll begins,
             the door expands over this strip (see doorTop/Height) and pressOpacity. */}
@@ -413,42 +549,58 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
           </motion.div>
         </div>
 
-        {/* Bio layout — z above dark band (z-14) so copy isn’t painted over; below door (z-20) + hero clip (z-30). */}
-        <div className="pointer-events-none absolute inset-0 z-16 mx-auto flex max-w-[1400px] flex-col gap-12 px-6 pt-32 pb-0 sm:gap-16 sm:px-10 sm:pt-36 lg:flex-row lg:items-start lg:gap-10 lg:px-8 lg:pt-40 xl:gap-12 xl:px-10 xl:pt-44">
-          <div
-            ref={portraitGhostRef}
-            aria-hidden
-            // Cap by viewport height: portrait is 501:647 (≈1.291 ratio).
-            // Reserve ~410px for nav + top padding + dark band + breathing room
-            // so the ghost (and final door) always fit inside one viewport.
-            className="invisible relative mx-auto w-full max-w-[min(501px,calc((100svh-410px)/1.291))] shrink-0 max-lg:mx-0 max-lg:ml-auto max-lg:mr-0 lg:mx-0 lg:ml-20 lg:mr-0 xl:ml-28"
-          >
-            <div className="relative aspect-501/647 w-full" />
-          </div>
-
-          <motion.div
-            className="relative z-30 pointer-events-auto min-w-0 flex-1 pt-0 lg:ml-0 lg:max-w-[600px] lg:pt-2 xl:max-w-[640px]"
-            style={{ opacity: bioTextOpacity, y: bioTextY }}
-          >
-            <p
-              id="bio-eyebrow"
-              className="text-[15px] font-semibold uppercase tracking-[0.18em] text-brick-600"
+        {/* Bio layout — z above dark band (z-14); below door (z-20) + hero clip (z-30).
+            Top-align under the fixed header only. Viewport-level vertical center (e.g. my-auto) adds half the leftover
+            height *above* the arch on tall screens; lg:items-center still lines up copy with the portrait in-row. */}
+        <div
+          className="pointer-events-none absolute inset-0 z-16 px-6 sm:px-10"
+          style={{ paddingTop: NAV_OFFSET_PX + BIO_STACK_TOP_GAP_PX }}
+        >
+          <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-12 sm:gap-16 lg:flex-row lg:items-center lg:gap-10 lg:pl-7 lg:pr-9 xl:gap-12 xl:pl-9 xl:pr-11">
+            <div
+              ref={portraitGhostRef}
+              aria-hidden
+              className="invisible relative mx-auto w-full max-w-[501px] shrink-0 max-lg:mx-0 max-lg:ml-auto max-lg:mr-0 lg:mx-0 lg:ml-14 lg:mr-0 xl:ml-20"
             >
-              Adrienne L. Lucas
-            </p>
+              <div className="relative aspect-501/647 w-full" />
+            </div>
 
-            <p className="mt-8 font-serif text-[clamp(1.75rem,4.2vw,2.75rem)] font-normal leading-[1.02] tracking-[-0.04em] text-ink-900">
-              {BIO_HEADLINE_LINES.map((line) => (
-                <span key={line} className="block">
-                  {line}
-                </span>
-              ))}
-            </p>
+            <motion.div
+              ref={bioTextColumnRef}
+              className="relative z-30 min-h-0 min-w-0 flex-1 pt-0 [scrollbar-gutter:stable] lg:ml-0 lg:max-w-[600px] xl:max-w-[640px]"
+              style={{
+                opacity: bioTextOpacity,
+                y: bioTextY,
+                pointerEvents: "auto",
+                ...(m?.bioColumnMaxHeightPx != null
+                  ? {
+                      maxHeight: m.bioColumnMaxHeightPx,
+                      overflowY: "auto",
+                      overscrollBehavior: "contain",
+                    }
+                  : {}),
+              }}
+            >
+              <p
+                id="bio-eyebrow"
+                className="text-[15px] font-semibold uppercase tracking-[0.18em] text-brick-600"
+              >
+                Adrienne L. Lucas
+              </p>
 
-            <p className="mt-10 max-w-[510px] text-[18px] leading-[1.54] tracking-[-0.012em] text-ink-900 sm:text-[19px] lg:text-[20px]">
-              {BIO}
-            </p>
-          </motion.div>
+              <p className="mt-5 font-serif text-[clamp(1.75rem,4.2vw,2.75rem)] font-normal leading-[1.02] tracking-[-0.04em] text-ink-900">
+                {BIO_HEADLINE_LINES.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+              </p>
+
+              <p className="mt-6 max-w-[510px] text-[18px] leading-[1.54] tracking-[-0.012em] text-ink-900 sm:text-[19px] lg:text-[20px]">
+                {BIO}
+              </p>
+            </motion.div>
+          </div>
         </div>
 
         {/* Door: haze + video + portrait only. */}
@@ -487,7 +639,7 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
             />
           </motion.div>
           <motion.div
-            className="absolute inset-0 z-1"
+            className="pointer-events-none absolute inset-0 z-1 select-none"
             style={{ opacity: portraitOpacity }}
           >
             <Image
@@ -495,7 +647,8 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
               alt="Adrienne L. Lucas, seated portrait"
               fill
               sizes="(max-width: 1024px) 100vw, 501px"
-              className="block object-cover object-center"
+              className="pointer-events-none block select-none object-cover object-center"
+              draggable={false}
               priority
             />
           </motion.div>
@@ -523,7 +676,7 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
               >
                 <ul
                   aria-label="Roles"
-                  className="flex shrink-0 flex-wrap items-center justify-center gap-3 font-sans text-[15.1676px] font-medium uppercase leading-[100%] tracking-[1.5px] text-ink-900"
+                  className="pointer-events-auto flex shrink-0 flex-wrap items-center justify-center gap-3 font-sans text-[15.1676px] font-medium uppercase leading-[100%] tracking-[1.5px] text-ink-900"
                 >
                   {ROLES.map((role, i) => (
                     <li key={role} className="flex shrink-0 items-center gap-3">
@@ -538,13 +691,13 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
                   ))}
                 </ul>
 
-                <h1 className="w-full max-w-[804px] text-pretty font-serif text-[clamp(2.5rem,5.2vw,4.305rem)] font-normal leading-[0.94] tracking-[-0.04em] text-ink-900">
+                <h1 className="pointer-events-auto w-full max-w-[804px] text-pretty font-serif text-[clamp(2.5rem,5.2vw,4.305rem)] font-normal leading-[0.94] tracking-[-0.04em] text-ink-900">
                   {HEADLINE}
                 </h1>
               </motion.div>
 
               <motion.p
-                className="mt-4 w-full max-w-[457px] text-center text-pretty font-sans text-[20px] font-normal leading-[144%] tracking-[-0.01em] text-ink-900"
+                className="pointer-events-auto mt-4 w-full max-w-[457px] text-center text-pretty font-sans text-[20px] font-normal leading-[144%] tracking-[-0.01em] text-ink-900"
                 variants={entrance.block}
               >
                 {HERO_SUBHEAD}
@@ -562,20 +715,51 @@ function MorphImpl({ onCannotFit }: MorphImplProps) {
           </motion.div>
         </motion.div>
 
-        {/* In-sticky band */}
+        {/* In-sticky band — top edge tracks arch bottom on lg; stacked layouts use max(portrait, bio). */}
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-14 min-h-[min(28vh,280px)] bg-[#301712]"
-          style={{ opacity: darkBandOpacity }}
+          data-dark-band
+          className="pointer-events-none absolute inset-x-0 z-14 bg-[#301712]"
+          style={{
+            opacity: darkBandOpacity,
+            ...(m
+              ? (() => {
+                  const clampedTop = Math.max(
+                    0,
+                    Math.min(m.darkBandTopPx, m.stickyFull.height - 2)
+                  );
+                  return {
+                    top: clampedTop,
+                    bottom: 0,
+                    height: "auto",
+                  };
+                })()
+              : { top: "100%", bottom: 0, height: 0 }),
+          }}
         />
       </div>
       </div>
 
-      {/* In-flow brown — z-0 so morph track (z-40) always stacks above when viewport overlap occurs */}
-      <section
-        className="relative z-0 min-h-[min(50vh,520px)] bg-[#301712] pb-20 pt-0 md:pb-28"
-        aria-hidden
-      />
+      {/* z-50 stacks Practice above the morph track (z-40) so the heading is
+          never hidden by the sticky's dark band during the overlap. The
+          negative margin pulls Practice up so the bio bottom → PracticeSection
+          top distance is `PRACTICE_GAP_PX` regardless of viewport height —
+          fixes the gap that previously grew with `100dvh`. Opacity fades in
+          with the dark band so Practice doesn't peek mid-morph. */}
+      <motion.div
+        className="relative z-50"
+        style={{
+          marginTop: m
+            ? Math.min(
+                0,
+                m.darkBandTopPx + PRACTICE_GAP_PX - m.stickyFull.height
+              )
+            : 0,
+          opacity: practiceOpacity,
+        }}
+      >
+        <PracticeSection />
+      </motion.div>
     </section>
   );
 }
