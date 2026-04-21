@@ -3,11 +3,8 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { EASE_HERO_OPACITY, HERO_STAGGER } from "./intro-motion";
+import { HEADLINE, HERO_SUBHEAD, ROLES } from "../lib/landing-content";
 import { PressLogos } from "./press-logos";
-
-const ROLES = ["Strategist", "Curator", "Connector"];
-
-const HEADLINE = "Building the rooms senior creatives return to";
 
 export function heroEntranceVariants(reduceMotion: boolean) {
   if (reduceMotion) {
@@ -126,8 +123,7 @@ export function Hero() {
             className="mt-4 w-full max-w-[457px] text-center text-pretty font-sans text-[20px] font-normal leading-[144%] tracking-[-0.01em] text-ink-900"
             variants={variants.block}
           >
-            Strategic partnerships, executive experiences, and a practice of
-            recalibration — so creative ambition can scale without depletion.
+            {HERO_SUBHEAD}
           </motion.p>
 
           {/* Figma: 48×279, p-8; label Inter Medium 17px, leading 1.19 */}

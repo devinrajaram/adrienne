@@ -8,25 +8,19 @@ import {
   useReducedMotion,
   useTransform,
 } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
+import {
+  BIO,
+  BIO_HEADLINE_LINES,
+  HEADLINE,
+  HERO_SUBHEAD,
+  ROLES,
+} from "../lib/landing-content";
 import { BioSection } from "./bio-section";
 import { Hero, heroEntranceVariants } from "./hero";
 import { PracticeSection } from "./practice-section";
 import { PressLogos } from "./press-logos";
-
-const ROLES = ["Strategist", "Curator", "Connector"] as const;
-const HEADLINE = "Building the rooms senior creatives return to";
-const HERO_SUBHEAD =
-  "Strategic partnerships, executive experiences, and a practice of recalibration — so creative ambition can scale without depletion.";
-
-const BIO_HEADLINE_LINES = [
-  "Communications Executive.",
-  "Cultural Strategist.",
-  "Entrepreneur.",
-] as const;
-const BIO =
-  "Fifteen years across communications, media, and law. Global Head of Strategic Partnerships at The One Club for Creativity, where she doubled the revenue and regional footprint of the flagship program. Founder of Auria Creative Well — the rooms senior creatives return to for clarity, performance, and excellence.";
 
 /**
  * Total scroll length of the morph in dvh (dynamic viewport).
@@ -74,6 +68,46 @@ const BIO_STACK_TOP_GAP_PX = 10;
  */
 const MIN_MORPH_WIDTH_PX = 768;
 
+/**
+ * Width gate with SSR-safe first snapshot: always `false` until after the first
+ * microtask post-subscribe (matches static SSR HTML, avoids hydration mismatch),
+ * then tracks `innerWidth` including resize.
+ */
+const morphWidthListeners = new Set<() => void>();
+let morphWidthCommitted = false;
+
+function subscribeMorphWidth(onStoreChange: () => void) {
+  morphWidthListeners.add(onStoreChange);
+  queueMicrotask(() => {
+    if (morphWidthCommitted) return;
+    morphWidthCommitted = true;
+    morphWidthListeners.forEach((l) => l());
+  });
+  window.addEventListener("resize", onStoreChange);
+  return () => {
+    morphWidthListeners.delete(onStoreChange);
+    window.removeEventListener("resize", onStoreChange);
+  };
+}
+
+function getSnapshotMorphWidth(): boolean {
+  if (typeof window === "undefined") return false;
+  if (!morphWidthCommitted) return false;
+  return window.innerWidth >= MIN_MORPH_WIDTH_PX;
+}
+
+function getServerSnapshotMorphWidth(): boolean {
+  return false;
+}
+
+function useMorphWidthGate(): boolean {
+  return useSyncExternalStore(
+    subscribeMorphWidth,
+    getSnapshotMorphWidth,
+    getServerSnapshotMorphWidth
+  );
+}
+
 /** Scroll progress: expand door over press → crop to card → slide to bio. */
 const P_COVER_PRESS_END = 0.14;
 const P_CENTERED_END = 0.42;
@@ -105,6 +139,42 @@ type Measurements = {
   /** lg row: cap bio copy to portrait column height so brown can start at arch bottom. */
   bioColumnMaxHeightPx: number | null;
 };
+
+const MEASURE_EPS = 0.5;
+
+function nearlyRectEqual(a: Rect, b: Rect): boolean {
+  return (
+    Math.abs(a.top - b.top) < MEASURE_EPS &&
+    Math.abs(a.left - b.left) < MEASURE_EPS &&
+    Math.abs(a.width - b.width) < MEASURE_EPS &&
+    Math.abs(a.height - b.height) < MEASURE_EPS
+  );
+}
+
+function nullableNumberClose(
+  a: number | null | undefined,
+  b: number | null
+): boolean {
+  if (a == null && b == null) return true;
+  if (a == null || b == null) return false;
+  return Math.abs(a - b) < MEASURE_EPS;
+}
+
+function measurementsEqual(
+  prev: Measurements | null,
+  next: Measurements
+): boolean {
+  if (!prev) return false;
+  return (
+    nearlyRectEqual(prev.hero, next.hero) &&
+    nearlyRectEqual(prev.stickyFull, next.stickyFull) &&
+    nearlyRectEqual(prev.centered, next.centered) &&
+    nearlyRectEqual(prev.final, next.final) &&
+    Math.abs(prev.finalRadius - next.finalRadius) < MEASURE_EPS &&
+    Math.abs(prev.darkBandTopPx - next.darkBandTopPx) < MEASURE_EPS &&
+    nullableNumberClose(prev.bioColumnMaxHeightPx, next.bioColumnMaxHeightPx)
+  );
+}
 
 /** Piecewise-linear interpolator over (progress → value) keyframes. */
 function interp(
@@ -185,28 +255,10 @@ function doorGeometry(
 
 export function HeroBioMorph() {
   const reduceMotion = useReducedMotion();
-  const [enabled, setEnabled] = useState(false);
-
-  // Defer enabling the morph until after hydration so reduced-motion users
-  // (and the SSR pass) get the static layout, no hydration mismatch.
-  // Width gate only — the morph is desktop-shaped (side-by-side bio), so
-  // narrow viewports get the stacked static layout. Height has no gate; the
-  // final portrait stays fixed-size at every viewport height (see comment
-  // on MIN_MORPH_WIDTH_PX).
-  useEffect(() => {
-    if (reduceMotion === true) {
-      setEnabled(false);
-      return;
-    }
-
-    const fits = () => window.innerWidth >= MIN_MORPH_WIDTH_PX;
-
-    setEnabled(fits());
-
-    const onResize = () => setEnabled(fits());
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [reduceMotion]);
+  const wideEnough = useMorphWidthGate();
+  /** Wait for a definite `false` so we never flash morph before prefers-reduced-motion resolves. */
+  const enabled = reduceMotion === false && wideEnough;
+  const instant = reduceMotion === true;
 
   if (!enabled) {
     return (
@@ -220,21 +272,19 @@ export function HeroBioMorph() {
     );
   }
 
-  return <MorphImpl />;
+  return <MorphImpl instant={instant} />;
 }
 
 /** Tailwind `lg` breakpoint — matches bio `lg:flex-row`. */
 const LG_ROW_MIN_PX = 1024;
 
-function MorphImpl() {
+function MorphImpl({ instant }: { instant: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
   const heroAreaRef = useRef<HTMLDivElement>(null);
   const portraitGhostRef = useRef<HTMLDivElement>(null);
   const bioTextColumnRef = useRef<HTMLDivElement>(null);
 
-  const reduceMotion = useReducedMotion();
-  const instant = reduceMotion === true;
   const entrance = heroEntranceVariants(instant);
 
   const [m, setM] = useState<Measurements | null>(null);
@@ -322,7 +372,7 @@ function MorphImpl() {
         : Math.max(portraitBottomInSticky, bioBottomInSticky, doorBottomInSticky);
       const bioColumnMaxHeightPx = isLgRow ? pRect.height : null;
 
-      setM({
+      const next: Measurements = {
         hero: heroLocal,
         stickyFull,
         centered: centeredLocal,
@@ -330,7 +380,8 @@ function MorphImpl() {
         finalRadius,
         darkBandTopPx,
         bioColumnMaxHeightPx,
-      });
+      };
+      setM((prev) => (measurementsEqual(prev, next) ? prev : next));
     };
 
     const updateProgress = () => {
@@ -581,7 +632,9 @@ function MorphImpl() {
                   ? {
                       maxHeight: m.bioColumnMaxHeightPx,
                       overflowY: "auto",
-                      overscrollBehavior: "contain",
+                      /* Do not use overscroll-behavior: contain — it blocks scroll chaining
+                         to the document at the inner edge, so wheel/trackpad can feel “stuck”
+                         above Practice when the cursor is over the bio column. */
                     }
                   : {}),
               }}

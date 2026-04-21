@@ -1,13 +1,6 @@
 import Image from "next/image";
 
-const HEADLINE_LINES = [
-  "Communications Executive.",
-  "Cultural Strategist.",
-  "Entrepreneur.",
-] as const;
-
-const BIO =
-  "Fifteen years across communications, media, and law. Global Head of Strategic Partnerships at The One Club for Creativity, where she doubled the revenue and regional footprint of the flagship program. Founder of Auria Creative Well — the rooms senior creatives return to for clarity, performance, and excellence.";
+import { BIO, BIO_HEADLINE_LINES } from "../lib/landing-content";
 
 export function BioSection() {
   return (
@@ -38,7 +31,7 @@ export function BioSection() {
           </p>
 
           <p className="mt-8 font-serif text-[clamp(1.75rem,4.2vw,2.75rem)] font-normal leading-[1.02] tracking-[-0.04em] text-ink-900">
-            {HEADLINE_LINES.map((line) => (
+            {BIO_HEADLINE_LINES.map((line) => (
               <span key={line} className="block">
                 {line}
               </span>

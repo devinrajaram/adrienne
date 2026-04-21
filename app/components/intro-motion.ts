@@ -15,9 +15,6 @@ export const PRESS_STAGGER = 0.11;
 /** Hero copy: slow ease-in-out feel (Material-like), reads calm on large type */
 export const EASE_HERO_OPACITY = [0.4, 0, 0.2, 1] as const;
 
-/** Legacy alias */
-export const EASE_FADE = [0.33, 1, 0.68, 1] as const;
-
 /** Seconds between hero lead → sub → CTA */
 export const HERO_STAGGER = 0.16;
 
