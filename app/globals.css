@@ -7,18 +7,18 @@
 
 :root {
   --background: #f4ead2;
-  --foreground: #47240e;
+  --foreground: #410f0b;
 
-  --ink-900: #47240e;
-  --ink-700: #552d1a;
+  --ink-900: #410f0b;
+  --ink-700: #410f0b;
   --cream-100: #ffd5c1;
   --cream-200: #f4ead2;
   --haze-300: #d8a886;
   --brick-600: #9e2616;
 
-  /* Dark "practice" palette — sourced from Figma node 41:29 */
-  --ink-950: #301712;
-  --ink-925: #391c16;
+  /* Dark "practice" palette — deeper than primary ink */
+  --ink-950: #260807;
+  --ink-925: #2f100c;
   --ember-100: #ffcabf;
   --ember-50: #ffbeaf;
   --clay-300: #ca9a90;

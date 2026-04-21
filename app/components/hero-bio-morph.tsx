@@ -35,7 +35,7 @@ const SCROLL_LENGTH_VH = 175;
 
 /**
  * Dark band fills from `darkBandTopPx` to the bottom of the sticky so it
- * butts directly against the in-flow PracticeSection (same `#301712`). Capping
+ * butts directly against the in-flow PracticeSection (same `--ink-950`). Capping
  * the height left a visible cream-200 stripe (the sticky's bg) below the band
  * on tall viewports, which read as a growing gap before the practice heading.
  */
@@ -693,7 +693,7 @@ function MorphImpl({ instant }: { instant: boolean }) {
               muted
               playsInline
               preload="auto"
-              src="/video/vid2.mp4"
+              src="/video/vid3.mp4"
             />
           </motion.div>
           <motion.div
@@ -764,7 +764,7 @@ function MorphImpl({ instant }: { instant: boolean }) {
               <motion.div className="pointer-events-auto mt-9" variants={entrance.block}>
                 <Link
                   href="#contact"
-                  className="inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-ink-700 p-2 text-[17px] font-medium leading-[1.19] tracking-[-0.01em] text-cream-100 transition-colors duration-200 hover:bg-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300"
+                  className="inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-ink-700 p-2 text-[17px] font-medium leading-[1.19] tracking-[-0.01em] text-cream-100 transition-colors duration-200 hover:bg-ink-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300"
                 >
                   Start a conversation
                 </Link>
@@ -781,7 +781,7 @@ function MorphImpl({ instant }: { instant: boolean }) {
         <motion.div
           aria-hidden
           data-dark-band
-          className="pointer-events-none absolute inset-x-0 z-14 bg-[#301712]"
+          className="pointer-events-none absolute inset-x-0 z-14 bg-ink-950"
           style={{
             opacity: fillOpacity,
             ...(m

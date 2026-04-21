@@ -79,7 +79,7 @@ export function Hero() {
               muted
               playsInline
               preload="auto"
-              src="/video/vid2.mp4"
+              src="/video/vid3.mp4"
             />
           ) : null}
         </div>
@@ -130,7 +130,7 @@ export function Hero() {
           <motion.div className="mt-9" variants={variants.block}>
             <Link
               href="#contact"
-              className="inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-ink-700 p-2 text-[17px] font-medium leading-[1.19] tracking-[-0.01em] text-cream-100 transition-colors duration-200 hover:bg-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300"
+              className="inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-ink-700 p-2 text-[17px] font-medium leading-[1.19] tracking-[-0.01em] text-cream-100 transition-colors duration-200 hover:bg-ink-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300"
             >
               Start a conversation
             </Link>
