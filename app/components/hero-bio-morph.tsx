@@ -19,6 +19,7 @@ import {
 } from "../lib/landing-content";
 import { BioSection } from "./bio-section";
 import { Hero, heroEntranceVariants } from "./hero";
+import { HeroShaderBackground } from "./hero-shader-background";
 import { PracticeSection } from "./practice-section";
 import { PressLogos } from "./press-logos";
 
@@ -685,16 +686,7 @@ function MorphImpl({ instant }: { instant: boolean }) {
             className="absolute inset-0 z-0"
             style={{ opacity: videoOpacity }}
           >
-            <video
-              aria-hidden
-              className="pointer-events-none absolute left-1/2 top-1/2 block h-auto w-auto min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 scale-[1.12] object-cover object-center"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              src="/video/vid3.mp4"
-            />
+            <HeroShaderBackground />
           </motion.div>
           <motion.div
             className="pointer-events-none absolute inset-0 z-1 select-none"
@@ -734,7 +726,7 @@ function MorphImpl({ instant }: { instant: boolean }) {
               >
                 <ul
                   aria-label="Roles"
-                  className="pointer-events-auto flex shrink-0 flex-wrap items-center justify-center gap-3 font-sans text-[15.1676px] font-medium uppercase leading-[100%] tracking-[1.5px] text-ink-900"
+                  className="pointer-events-auto flex shrink-0 flex-wrap items-center justify-center gap-3 font-sans text-[15.1676px] font-medium uppercase leading-[100%] tracking-[1.5px] text-cream-200"
                 >
                   {ROLES.map((role, i) => (
                     <li key={role} className="flex shrink-0 items-center gap-3">
@@ -742,20 +734,20 @@ function MorphImpl({ instant }: { instant: boolean }) {
                       {i < ROLES.length - 1 ? (
                         <span
                           aria-hidden
-                          className="block h-[15px] w-px shrink-0 bg-ink-900/60"
+                          className="block h-[15px] w-px shrink-0 bg-cream-200/60"
                         />
                       ) : null}
                     </li>
                   ))}
                 </ul>
 
-                <h1 className="pointer-events-auto w-full max-w-[804px] text-pretty font-serif text-[clamp(2.5rem,5.2vw,4.305rem)] font-normal leading-[0.94] tracking-[-0.04em] text-ink-900">
+                <h1 className="pointer-events-auto w-full max-w-[804px] text-pretty font-serif text-[clamp(2.5rem,5.2vw,4.305rem)] font-normal leading-[0.94] tracking-[-0.04em] text-cream-200">
                   {HEADLINE}
                 </h1>
               </motion.div>
 
               <motion.p
-                className="pointer-events-auto mt-4 w-full max-w-[457px] text-center text-pretty font-sans text-[20px] font-normal leading-[144%] tracking-[-0.01em] text-ink-900"
+                className="pointer-events-auto mt-4 w-full max-w-[457px] text-center text-pretty font-sans text-[20px] font-normal leading-[144%] tracking-[-0.01em] text-cream-200"
                 variants={entrance.block}
               >
                 {HERO_SUBHEAD}
@@ -764,7 +756,7 @@ function MorphImpl({ instant }: { instant: boolean }) {
               <motion.div className="pointer-events-auto mt-9" variants={entrance.block}>
                 <Link
                   href="#contact"
-                  className="inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-ink-700 p-2 text-[17px] font-medium leading-[1.19] tracking-[-0.01em] text-cream-100 transition-colors duration-200 hover:bg-ink-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300"
+                  className="inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-cream-200 p-2 text-[17px] font-medium leading-[1.19] tracking-[-0.01em] text-ink-900 transition-colors duration-200 hover:bg-cream-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream-200 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300"
                 >
                   Start a conversation
                 </Link>

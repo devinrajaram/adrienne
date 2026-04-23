@@ -16,13 +16,18 @@
   --haze-300: #d8a886;
   --brick-600: #9e2616;
 
-  /* Dark "practice" palette — deeper than primary ink */
-  --ink-950: #260807;
-  --ink-925: #2f100c;
+  /* Dark "practice" palette — Figma PREVIEW node 53:52 */
+  --ink-950: #301712;
+  --ink-925: #371d18;
   --ember-100: #ffcabf;
-  --ember-50: #ffbeaf;
-  --clay-300: #ca9a90;
-  --rust-400: #cb7463;
+  /* Figma practice cards: title / CTA label (node 53:52) */
+  --practice-card-title: #ffcabd;
+  --practice-cta-text: #ffc4b8;
+  --ember-50: #ffc4b5;
+  --clay-300: #d9a091;
+  --rust-400: #ffae99;
+  --cream-300: #f9c3b6;
+  --brick-700: #88353a;
 
   --font-times: "Times New Roman", Times, "Liberation Serif", "DejaVu Serif",
     Georgia, "Noto Serif", serif;
@@ -40,9 +45,13 @@
   --color-ink-950: var(--ink-950);
   --color-ink-925: var(--ink-925);
   --color-ember-100: var(--ember-100);
+  --color-practice-card-title: var(--practice-card-title);
+  --color-practice-cta-text: var(--practice-cta-text);
   --color-ember-50: var(--ember-50);
   --color-clay-300: var(--clay-300);
   --color-rust-400: var(--rust-400);
+  --color-cream-300: var(--cream-300);
+  --color-brick-700: var(--brick-700);
   --font-sans: var(--font-inter);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-serif: var(--font-times);

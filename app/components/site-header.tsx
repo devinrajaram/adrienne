@@ -24,7 +24,7 @@ const NAV_RIGHT = [
 ];
 
 const linkClass =
-  "text-[15px] font-medium uppercase tracking-[0.18em] text-ink-700 transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm";
+  "text-[15px] font-medium uppercase tracking-[0.18em] text-[color:inherit] transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm";
 
 /**
  * Cream bar fades in over the same scroll window the morph uses to fill in
@@ -81,6 +81,13 @@ export function SiteHeader() {
     "blur(10px)",
   ]);
 
+  /** Cream over the hero shader → ink once the cream bar has filled in. */
+  const color = useTransform(
+    scrollProgress,
+    [0, 1],
+    ["#f4ead2", "#410f0b"]
+  );
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -101,6 +108,7 @@ export function SiteHeader() {
         backgroundColor,
         backdropFilter,
         WebkitBackdropFilter: backdropFilter,
+        color,
       }}
       initial={
         instant
@@ -141,9 +149,23 @@ export function SiteHeader() {
               window.location.assign("/");
             }
           }}
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap font-serif text-[clamp(1.6rem,2.5vw,2.55rem)] font-bold leading-none tracking-[-0.04em] text-ink-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-inherit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm"
         >
-          Adrienne L. Lucas
+          <motion.span
+            aria-hidden
+            className="relative block h-10 w-60 sm:h-11 sm:w-64 md:h-12 md:w-72"
+            style={{
+              backgroundColor: color,
+              maskImage: "url(/images/logo.svg)",
+              WebkitMaskImage: "url(/images/logo.svg)",
+              maskSize: "contain",
+              maskRepeat: "no-repeat",
+              maskPosition: "center",
+              WebkitMaskSize: "contain",
+              WebkitMaskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+            }}
+          />
         </Link>
 
         <ul className="ml-auto hidden items-center gap-10 md:flex">
@@ -162,7 +184,7 @@ export function SiteHeader() {
           aria-expanded={open}
           aria-controls="mobile-menu"
           onClick={() => setOpen((v) => !v)}
-          className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-sm text-ink-700 transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 md:hidden"
+          className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-sm text-[color:inherit] transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 md:hidden"
         >
           <span className="sr-only">{open ? "Close" : "Open"} menu</span>
           <svg

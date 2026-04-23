@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { EASE_HERO_OPACITY, HERO_STAGGER } from "./intro-motion";
 import { HEADLINE, HERO_SUBHEAD, ROLES } from "../lib/landing-content";
 import { PressLogos } from "./press-logos";
+import { HeroShaderBackground } from "./hero-shader-background";
 
 export function heroEntranceVariants(reduceMotion: boolean) {
   if (reduceMotion) {
@@ -70,18 +71,7 @@ export function Hero() {
     >
       <div className="relative isolate flex min-h-0 flex-1 flex-col bg-haze-300">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-          {!instant ? (
-            <video
-              aria-hidden
-              className="pointer-events-none absolute left-1/2 top-1/2 block h-auto w-auto min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 scale-[1.12] object-cover object-center"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              src="/video/vid3.mp4"
-            />
-          ) : null}
+          {!instant ? <HeroShaderBackground /> : null}
         </div>
 
         <motion.div
@@ -97,7 +87,7 @@ export function Hero() {
             {/* Inter 500, 15.1676px / 100% lh, 0.09em tracking, uppercase — per Figma auto-layout */}
             <ul
               aria-label="Roles"
-              className="flex shrink-0 flex-wrap items-center justify-center gap-3 font-sans text-[15.1676px] font-medium uppercase leading-[100%] tracking-[1.5px] text-ink-900"
+              className="flex shrink-0 flex-wrap items-center justify-center gap-3 font-sans text-[15.1676px] font-medium uppercase leading-[100%] tracking-[1.5px] text-cream-200"
             >
               {ROLES.map((role, i) => (
                 <li key={role} className="flex shrink-0 items-center gap-3">
@@ -105,7 +95,7 @@ export function Hero() {
                   {i < ROLES.length - 1 ? (
                     <span
                       aria-hidden
-                      className="block h-[15px] w-px shrink-0 bg-ink-900/60"
+                      className="block h-[15px] w-px shrink-0 bg-cream-200/60"
                     />
                   ) : null}
                 </li>
@@ -113,14 +103,14 @@ export function Hero() {
             </ul>
 
             {/* Figma: display serif ~69px, leading 0.94, tracking ~-2.75px, max 804px */}
-            <h1 className="w-full max-w-[804px] text-pretty font-serif text-[clamp(2.5rem,5.2vw,4.305rem)] font-normal leading-[0.94] tracking-[-0.04em] text-ink-900">
+            <h1 className="w-full max-w-[804px] text-pretty font-serif text-[clamp(2.5rem,5.2vw,4.305rem)] font-normal leading-[0.94] tracking-[-0.04em] text-cream-200">
               {HEADLINE}
             </h1>
           </motion.div>
 
           {/* Inter 20/400, leading 144%, tracking -0.01em, 457px — centered in flow (not absolute) */}
           <motion.p
-            className="mt-4 w-full max-w-[457px] text-center text-pretty font-sans text-[20px] font-normal leading-[144%] tracking-[-0.01em] text-ink-900"
+            className="mt-4 w-full max-w-[457px] text-center text-pretty font-sans text-[20px] font-normal leading-[144%] tracking-[-0.01em] text-cream-200"
             variants={variants.block}
           >
             {HERO_SUBHEAD}
@@ -130,7 +120,7 @@ export function Hero() {
           <motion.div className="mt-9" variants={variants.block}>
             <Link
               href="#contact"
-              className="inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-ink-700 p-2 text-[17px] font-medium leading-[1.19] tracking-[-0.01em] text-cream-100 transition-colors duration-200 hover:bg-ink-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300"
+              className="inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-cream-200 p-2 text-[17px] font-medium leading-[1.19] tracking-[-0.01em] text-ink-900 transition-colors duration-200 hover:bg-cream-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream-200 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300"
             >
               Start a conversation
             </Link>
