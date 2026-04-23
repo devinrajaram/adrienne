@@ -124,7 +124,7 @@ export function SiteHeader() {
     >
       <nav
         aria-label="Primary"
-        className="relative mx-auto flex h-[70px] max-w-[1400px] items-center px-6 sm:px-10 lg:px-8"
+        className="relative mx-auto flex h-[70px] max-w-[1200px] items-center px-6 sm:px-10 lg:px-8"
       >
         <ul className="hidden flex-1 items-center gap-10 md:flex">
           {NAV_LEFT.map((item) => (

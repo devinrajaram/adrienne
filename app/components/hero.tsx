@@ -75,7 +75,7 @@ export function Hero() {
         </div>
 
         <motion.div
-          className="relative mx-auto flex w-full max-w-[1400px] flex-1 flex-col items-center justify-center px-6 pt-[120px] pb-12 text-center sm:px-10 sm:pt-[140px] sm:pb-16 lg:pt-[160px]"
+          className="relative mx-auto flex w-full max-w-[1200px] flex-1 flex-col items-center justify-center px-6 pt-[120px] pb-12 text-center sm:px-10 sm:pt-[140px] sm:pb-16 lg:pt-[160px]"
           variants={variants.column}
           initial="hidden"
           animate="visible"

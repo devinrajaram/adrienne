@@ -15,22 +15,22 @@ const LOGOS: Logo[] = [
   {
     src: "/images/press/nyt.svg",
     alt: "The New York Times",
-    heightClass: "h-[34px] sm:h-[41px]",
+    heightClass: "h-[28px] lg:h-[34px]",
   },
   {
     src: "/images/press/adage.svg",
     alt: "Ad Age",
-    heightClass: "h-[30px] sm:h-[37px]",
+    heightClass: "h-[24px] lg:h-[30px]",
   },
   {
     src: "/images/press/cannes-lions.svg",
     alt: "Cannes Lions",
-    heightClass: "h-[36px] sm:h-[45px]",
+    heightClass: "h-[30px] lg:h-[36px]",
   },
   {
     src: "/images/press/adcolor.svg",
     alt: "ADCOLOR",
-    heightClass: "h-[34px] sm:h-[42px]",
+    heightClass: "h-[28px] lg:h-[34px]",
   },
 ];
 
@@ -61,21 +61,18 @@ export function PressLogos() {
       aria-label="Featured in"
       className="relative pt-6 pb-8 sm:pt-8 sm:pb-10"
     >
-      <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-y-8 px-6 sm:px-10 md:flex-row md:flex-wrap md:items-center md:gap-x-12 md:px-8">
+      <div className="mx-auto flex max-w-[1200px] flex-nowrap items-center gap-x-8 px-6 sm:px-10 lg:gap-x-10 lg:px-8">
         <motion.p
           aria-hidden
-          className="text-[15px] font-semibold uppercase tracking-[0.18em] text-ink-700/50"
+          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.18em] text-ink-700/50 lg:text-[15px]"
           {...itemProps(0)}
         >
           Featured In:
         </motion.p>
 
-        <ul className="flex flex-1 flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-14 md:flex-nowrap md:justify-around">
+        <ul className="flex flex-1 flex-nowrap items-center justify-between">
           <li className="flex items-center">
-            <motion.div
-              className="flex items-center"
-              {...itemProps(1)}
-            >
+            <motion.div className="flex items-center" {...itemProps(1)}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={LOGOS[0].src}
@@ -86,11 +83,8 @@ export function PressLogos() {
           </li>
 
           <li className="flex items-center">
-            <motion.div
-              className="flex items-center"
-              {...itemProps(2)}
-            >
-              <span className="font-serif text-[28px] font-bold leading-none tracking-[-0.05em] text-ink-700 sm:text-[37px]">
+            <motion.div className="flex items-center" {...itemProps(2)}>
+              <span className="font-serif text-[22px] font-bold leading-none tracking-[-0.05em] text-ink-700 lg:text-[28px]">
                 PRINT
               </span>
             </motion.div>
@@ -98,10 +92,7 @@ export function PressLogos() {
 
           {LOGOS.slice(1).map((logo, i) => (
             <li key={logo.src} className="flex items-center">
-              <motion.div
-                className="flex items-center"
-                {...itemProps(3 + i)}
-              >
+              <motion.div className="flex items-center" {...itemProps(3 + i)}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={logo.src}

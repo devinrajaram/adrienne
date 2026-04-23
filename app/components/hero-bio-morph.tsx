@@ -610,10 +610,10 @@ function MorphImpl({ instant }: { instant: boolean }) {
             Top-align under the fixed header only. Viewport-level vertical center (e.g. my-auto) adds half the leftover
             height *above* the arch on tall screens; lg:items-center still lines up copy with the portrait in-row. */}
         <div
-          className="pointer-events-none absolute inset-0 z-16 px-6 sm:px-10"
+          className="pointer-events-none absolute inset-0 z-16 px-6 sm:px-10 lg:px-8"
           style={{ paddingTop: NAV_OFFSET_PX + BIO_STACK_TOP_GAP_PX }}
         >
-          <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-12 sm:gap-16 lg:flex-row lg:items-center lg:gap-10 lg:pl-7 lg:pr-9 xl:gap-12 xl:pl-9 xl:pr-11">
+          <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-12 sm:gap-16 lg:flex-row lg:items-center lg:gap-10 xl:gap-12">
             <div
               ref={portraitGhostRef}
               aria-hidden
@@ -711,7 +711,7 @@ function MorphImpl({ instant }: { instant: boolean }) {
           style={{ clipPath: heroClipPath }}
         >
           <motion.div
-            className="mx-auto flex h-full min-h-0 w-full max-w-[1400px] -translate-y-8 flex-col items-center justify-center px-6 pt-[120px] pb-[140px] text-center sm:-translate-y-10 sm:px-10 sm:pt-[140px] sm:pb-[160px] lg:-translate-y-12 lg:pt-[160px]"
+            className="mx-auto flex h-full min-h-0 w-full max-w-[1200px] -translate-y-8 flex-col items-center justify-center px-6 pt-[120px] pb-[140px] text-center sm:-translate-y-10 sm:px-10 sm:pt-[140px] sm:pb-[160px] lg:-translate-y-12 lg:px-8 lg:pt-[160px]"
             style={{ opacity: heroMainOpacity }}
           >
             <motion.div

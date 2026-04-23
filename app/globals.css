@@ -28,6 +28,7 @@
   --rust-400: #ffae99;
   --cream-300: #f9c3b6;
   --brick-700: #88353a;
+  --brick-hover: #9e4a4e;
 
   --font-times: "Times New Roman", Times, "Liberation Serif", "DejaVu Serif",
     Georgia, "Noto Serif", serif;
@@ -52,6 +53,7 @@
   --color-rust-400: var(--rust-400);
   --color-cream-300: var(--cream-300);
   --color-brick-700: var(--brick-700);
+  --color-brick-hover: var(--brick-hover);
   --font-sans: var(--font-inter);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-serif: var(--font-times);
