@@ -144,8 +144,9 @@ export function SiteHeader() {
       />
       <nav
         aria-label="Primary"
-        className="relative mx-auto flex h-[70px] max-w-[1200px] items-center px-6 sm:px-10 lg:px-8"
+        className="relative h-[70px] px-6 sm:px-10 lg:px-8"
       >
+      <div className="relative mx-auto flex h-full max-w-[1200px] items-center">
         <ul className="hidden flex-1 items-center gap-10 md:flex">
           {NAV_LEFT.map((item) => (
             <li key={item.href}>
@@ -230,6 +231,7 @@ export function SiteHeader() {
             )}
           </svg>
         </button>
+      </div>
       </nav>
 
       {open ? (

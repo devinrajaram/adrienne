@@ -10,11 +10,11 @@ export function BioSection({
       aria-labelledby="bio-eyebrow"
       className={
         compact
-          ? "bg-cream-200 pt-10 pb-0 sm:pt-12 lg:pt-16"
-          : "bg-cream-200 pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-24"
+          ? "bg-cream-200 px-6 pt-10 pb-0 sm:px-10 sm:pt-12 lg:px-8 lg:pt-16"
+          : "bg-cream-200 px-6 pt-28 pb-16 sm:px-10 sm:pt-32 sm:pb-20 lg:px-8 lg:pt-40 lg:pb-24"
       }
     >
-      <div className="mx-auto flex max-w-[1200px] flex-col gap-12 px-6 sm:gap-16 sm:px-10 lg:flex-row lg:items-start lg:gap-10 lg:px-8 xl:gap-12 xl:px-10">
+      <div className="mx-auto flex max-w-[1200px] flex-col gap-12 sm:gap-16 lg:flex-row lg:items-start lg:gap-10 xl:gap-12">
         <div
           className={
             compact

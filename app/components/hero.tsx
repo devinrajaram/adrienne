@@ -83,7 +83,7 @@ export function Hero({
         </div>
 
         <motion.div
-          className="relative mx-auto flex w-full max-w-[1200px] flex-1 flex-col items-center justify-center px-6 pt-[120px] pb-12 text-center sm:px-10 sm:pt-[140px] sm:pb-16 lg:pt-[160px]"
+          className="relative flex flex-1 flex-col px-6 pt-[120px] pb-12 sm:px-10 sm:pt-[140px] sm:pb-16 lg:px-8 lg:pt-[160px]"
           variants={variants.column}
           initial="hidden"
           animate="visible"
@@ -91,6 +91,7 @@ export function Hero({
             extraBottomPx != null ? { paddingBottom: extraBottomPx } : undefined
           }
         >
+          <div className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col items-center justify-center text-center">
           <motion.div
             className="flex flex-col items-center gap-5"
             variants={variants.block}
@@ -136,6 +137,7 @@ export function Hero({
               Start a conversation
             </Link>
           </motion.div>
+          </div>
         </motion.div>
       </div>
 

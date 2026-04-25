@@ -711,11 +711,11 @@ function MorphImpl({ instant }: { instant: boolean }) {
           style={{ clipPath: heroClipPath }}
         >
           <motion.div
-            className="mx-auto flex h-full min-h-0 w-full max-w-[1200px] -translate-y-8 flex-col items-center justify-center px-6 pt-[120px] pb-[140px] text-center sm:-translate-y-10 sm:px-10 sm:pt-[140px] sm:pb-[160px] lg:-translate-y-12 lg:px-8 lg:pt-[160px]"
+            className="flex h-full min-h-0 w-full -translate-y-8 flex-col px-6 pt-[120px] pb-[140px] sm:-translate-y-10 sm:px-10 sm:pt-[140px] sm:pb-[160px] lg:-translate-y-12 lg:px-8 lg:pt-[160px]"
             style={{ opacity: heroMainOpacity }}
           >
             <motion.div
-              className="relative mx-auto flex w-full min-h-0 flex-1 flex-col items-center justify-center"
+              className="relative mx-auto flex w-full max-w-[1200px] min-h-0 flex-1 flex-col items-center justify-center text-center"
               variants={entrance.column}
               initial="hidden"
               animate="visible"

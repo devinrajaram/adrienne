@@ -90,23 +90,22 @@ export function PressLogos() {
     <section
       aria-label="Featured in"
       data-press-logos
-      className="relative pt-6 pb-8 sm:pt-8 sm:pb-10"
+      className="relative px-6 pt-6 pb-8 sm:px-10 sm:pt-8 sm:pb-10 lg:px-8"
     >
-      <motion.p
-        aria-hidden
-        className="mb-5 text-center text-[12px] font-semibold uppercase tracking-[0.18em] text-ink-700/55 lg:mb-6 lg:text-[13px]"
-        initial={instant ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: instant ? 0 : 0.52,
-          delay: instant ? 0 : INTRO_DELAY.press,
-          ease: EASE_PRESS,
-        }}
-      >
-        Featured in
-      </motion.p>
-
-      <div className="mx-auto w-full max-w-[1200px] px-6 sm:px-10 lg:px-8">
+      <div className="mx-auto w-full max-w-[1200px]">
+        <motion.p
+          aria-hidden
+          className="mb-5 text-center text-[12px] font-semibold uppercase tracking-[0.18em] text-ink-700/55 lg:mb-6 lg:text-[13px]"
+          initial={instant ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: instant ? 0 : 0.52,
+            delay: instant ? 0 : INTRO_DELAY.press,
+            ease: EASE_PRESS,
+          }}
+        >
+          Featured in
+        </motion.p>
         <div
           className="relative w-full overflow-hidden"
           style={{
