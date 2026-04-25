@@ -16,7 +16,7 @@ type Card = {
 
 const CARDS: readonly Card[] = [
   {
-    title: "Aura Creative Well",
+    title: "Auria Creative Well",
     subtitle: "Clarity, performance, and excellence.",
     bullets: ["Small-Group Dinners", "Executive Salons", "Immersive Retreats"],
     cta: "Explore Auria",
@@ -50,7 +50,7 @@ export function PracticeSection() {
     <section
       id="practice-section-root"
       aria-labelledby="practice-heading"
-      className="bg-ink-950 px-6 pb-20 pt-8 sm:px-10 sm:pt-10 sm:pb-24 lg:pt-12 lg:pb-32"
+      className="bg-ink-950 px-6 pb-20 pt-20 sm:px-10 sm:pt-24 sm:pb-24 lg:pt-28 lg:pb-32"
     >
       <div className="mx-auto max-w-[1200px]">
         <div className="mx-auto flex w-full flex-col items-center text-center">
@@ -89,7 +89,7 @@ export function PracticeSection() {
                     aria-hidden
                     className="mb-3 text-cream-100 [filter:drop-shadow(0_1px_10px_rgba(38,8,7,0.55))]"
                   >
-                    <div className="h-16 w-16 sm:h-20 sm:w-20">
+                    <div className="h-12 w-12 sm:h-16 sm:w-16">
                       <PracticeCardIcon variant={card.variant} />
                     </div>
                   </div>

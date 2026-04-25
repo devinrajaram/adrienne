@@ -2,7 +2,6 @@
 
 import {
   Shader,
-  FilmGrain,
   Liquify,
   MultiPointGradient,
   Paper,
@@ -15,26 +14,21 @@ export function HeroShaderBackground({ className }: { className?: string }) {
       className={className}
       style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
     >
-      {/* Elegant wellness palette: real tonal range — caramel highlight → copper
-          mid → deep wine-brown anchor → near-ink shadow — with a single muted
-          burgundy note so the wash reads rich instead of monochrome/muddy. */}
       <MultiPointGradient
-        colorA="#b88464"
-        colorB="#6a2824"
-        colorC="#8a553f"
-        colorD="#2e0d0a"
-        colorE="#a67050"
-        positionA={{ x: 0.22, y: 0.18 }}
-        positionB={{ x: 0.88, y: 0.62 }}
-        positionC={{ x: 0.54, y: 0.42 }}
-        positionD={{ x: 0.18, y: 0.82 }}
-        positionE={{ x: 0.78, y: 0.22 }}
-        smoothness={2.15}
+        colorA="#8f6c5a"
+        colorB="#F0E3C8"
+        colorC="#4d312a"
+        colorD="#462A27"
+        colorE="#57312A"
+        positionB={{ x: 0.59, y: 0.02 }}
+        positionC={{ x: 0.81, y: 0.53 }}
+        positionD={{ x: 0.33, y: 0.73 }}
+        positionE={{ x: 0.57, y: 0.3 }}
+        smoothness={2.05}
       />
-      <WaveDistortion angle={112} frequency={1.1} strength={0.28} speed={0.9} />
-      <Liquify intensity={12} damping={0.75} radius={1.5} stiffness={14} />
-      <Paper displacement={1} grainScale={0.1} roughness={0.1} seed={23} />
-      <FilmGrain strength={0.35} visible={false} />
+      <WaveDistortion angle={112} frequency={1.2} speed={3.2} />
+      <Liquify damping={0.7} radius={1.5} stiffness={15} />
+      <Paper displacement={1} grainScale={0.1} roughness={0.1} seed={42} />
     </Shader>
   );
 }

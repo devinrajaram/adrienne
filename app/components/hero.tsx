@@ -59,7 +59,10 @@ export function heroEntranceVariants(reduceMotion: boolean) {
   } as const;
 }
 
-export function Hero() {
+export function Hero({
+  fixedHeightPx,
+  extraBottomPx,
+}: { fixedHeightPx?: number; extraBottomPx?: number } = {}) {
   const reduceMotion = useReducedMotion();
   const instant = reduceMotion === true;
   const variants = heroEntranceVariants(instant);
@@ -67,7 +70,12 @@ export function Hero() {
   return (
     <section
       aria-label="Introduction"
-      className="relative flex min-h-svh flex-col bg-cream-200"
+      className="relative flex flex-col bg-cream-200"
+      style={
+        fixedHeightPx != null
+          ? { height: fixedHeightPx }
+          : { minHeight: "100svh" }
+      }
     >
       <div className="relative isolate flex min-h-0 flex-1 flex-col bg-haze-300">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
@@ -79,6 +87,9 @@ export function Hero() {
           variants={variants.column}
           initial="hidden"
           animate="visible"
+          style={
+            extraBottomPx != null ? { paddingBottom: extraBottomPx } : undefined
+          }
         >
           <motion.div
             className="flex flex-col items-center gap-5"

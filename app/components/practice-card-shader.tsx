@@ -41,9 +41,9 @@ type Palette = {
  * diverge so each card has its own wash and pace.
  */
 const PALETTES: Record<Variant, Palette> = {
-  // Aura — warm honey/amber, languid drift
+  // Aura — warm brown / sienna. Sits close to ink-950 with a touch more amber.
   aura: {
-    colors: ["#d4a574", "#e8bd8a", "#ffd4a1", "#a67150", "#c89160"],
+    colors: ["#2a130f", "#3d1f17", "#57312a", "#6e3f2a", "#8a4d36"],
     positions: [
       { x: 0.22, y: 0.18 },
       { x: 0.82, y: 0.28 },
@@ -55,9 +55,10 @@ const PALETTES: Record<Variant, Palette> = {
     wave: { angle: 78, frequency: 1.35, strength: 0.42, speed: 1.4 },
     liquify: { intensity: 14, stiffness: 12, damping: 0.55 },
   },
-  // Talent — smoky sand/taupe, softest motion
+  // Talent — chestnut / walnut. Warm neutral brown without the gold-yellow of
+  // cognac or the red of dialogue; reads as a quiet mid-brown.
   talent: {
-    colors: ["#e8d9c2", "#c8a990", "#8b6b5a", "#d8c0a8", "#a88870"],
+    colors: ["#20130f", "#2f1c15", "#452a20", "#5e3a2c", "#80543d"],
     positions: [
       { x: 0.14, y: 0.22 },
       { x: 0.78, y: 0.14 },
@@ -69,9 +70,9 @@ const PALETTES: Record<Variant, Palette> = {
     wave: { angle: 146, frequency: 0.95, strength: 0.3, speed: 2.2 },
     liquify: { intensity: 9, stiffness: 18, damping: 0.85 },
   },
-  // Dialogue — coral/peach, brisker and more agitated
+  // Dialogue — burgundy / wine. Most saturated; reads red-brown.
   dialogue: {
-    colors: ["#ffcabf", "#e89a82", "#cb7463", "#ffbeaf", "#b56a52"],
+    colors: ["#260c0a", "#3d1410", "#5a1c1a", "#7a2622", "#9e4a4e"],
     positions: [
       { x: 0.18, y: 0.32 },
       { x: 0.74, y: 0.18 },

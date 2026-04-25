@@ -48,12 +48,28 @@ export function SiteHeader() {
 
   useEffect(() => {
     let raf = 0;
+    const NAV_H = 70;
+    /** Width of the fade window above the press strip (in px). */
+    const FADE_RANGE = 60;
+    const isMorphRoute = pathname === "/";
+
     const compute = () => {
-      const vh = window.innerHeight || 1;
-      const start = vh * SCROLL_START_VH;
-      const end = vh * SCROLL_END_VH;
-      const y = window.scrollY;
-      const p = Math.max(0, Math.min(1, (y - start) / (end - start)));
+      if (isMorphRoute) {
+        const vh = window.innerHeight || 1;
+        const start = vh * SCROLL_START_VH;
+        const end = vh * SCROLL_END_VH;
+        const y = window.scrollY;
+        const p = Math.max(0, Math.min(1, (y - start) / (end - start)));
+        scrollProgress.set(p);
+        return;
+      }
+      const press = document.querySelector<HTMLElement>("[data-press-logos]");
+      if (!press) {
+        scrollProgress.set(window.scrollY > 0 ? 1 : 0);
+        return;
+      }
+      const distance = press.getBoundingClientRect().top - NAV_H;
+      const p = Math.max(0, Math.min(1, (FADE_RANGE - distance) / FADE_RANGE));
       scrollProgress.set(p);
     };
     const onScroll = () => {
@@ -68,7 +84,7 @@ export function SiteHeader() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [scrollProgress]);
+  }, [scrollProgress, pathname]);
 
   const bgAlpha = useTransform(
     scrollProgress,
@@ -104,12 +120,7 @@ export function SiteHeader() {
   return (
     <motion.header
       className="fixed inset-x-0 top-0 z-50 will-change-transform"
-      style={{
-        backgroundColor,
-        backdropFilter,
-        WebkitBackdropFilter: backdropFilter,
-        color,
-      }}
+      style={{ color }}
       initial={
         instant
           ? { opacity: 1, y: 0 }
@@ -122,6 +133,15 @@ export function SiteHeader() {
         ease: EASE_NAV,
       }}
     >
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 -z-10"
+        style={{
+          backgroundColor,
+          backdropFilter,
+          WebkitBackdropFilter: backdropFilter,
+        }}
+      />
       <nav
         aria-label="Primary"
         className="relative mx-auto flex h-[70px] max-w-[1200px] items-center px-6 sm:px-10 lg:px-8"

@@ -2,14 +2,26 @@ import Image from "next/image";
 
 import { BIO, BIO_HEADLINE_LINES } from "../lib/landing-content";
 
-export function BioSection() {
+export function BioSection({
+  compact = false,
+}: { compact?: boolean } = {}) {
   return (
     <section
       aria-labelledby="bio-eyebrow"
-      className="bg-cream-200 pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-24"
+      className={
+        compact
+          ? "bg-cream-200 pt-10 pb-0 sm:pt-12 lg:pt-16"
+          : "bg-cream-200 pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-24"
+      }
     >
       <div className="mx-auto flex max-w-[1200px] flex-col gap-12 px-6 sm:gap-16 sm:px-10 lg:flex-row lg:items-start lg:gap-10 lg:px-8 xl:gap-12 xl:px-10">
-        <div className="relative mx-auto w-full max-w-[501px] shrink-0 overflow-hidden rounded-t-[min(28vw,258px)] bg-white max-lg:mx-0 max-lg:ml-auto max-lg:mr-0 lg:mx-0 lg:ml-20 lg:mr-0 xl:ml-28">
+        <div
+          className={
+            compact
+              ? "relative mx-auto w-full max-w-[501px] shrink-0 overflow-hidden rounded-t-[min(28vw,258px)] bg-white max-lg:mx-0 max-lg:ml-auto max-lg:mr-0 lg:mx-0 lg:ml-0 lg:mr-0"
+              : "relative mx-auto w-full max-w-[501px] shrink-0 overflow-hidden rounded-t-[min(28vw,258px)] bg-white max-lg:mx-0 max-lg:ml-auto max-lg:mr-0 lg:mx-0 lg:ml-20 lg:mr-0 xl:ml-28"
+          }
+        >
           <div className="relative aspect-501/647 w-full">
             <Image
               src="/images/ad.png"
