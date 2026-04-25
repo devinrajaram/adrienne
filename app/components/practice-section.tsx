@@ -50,7 +50,7 @@ export function PracticeSection() {
     <section
       id="practice-section-root"
       aria-labelledby="practice-heading"
-      className="bg-ink-950 px-6 pb-20 pt-20 sm:px-10 sm:pt-24 sm:pb-24 lg:pt-28 lg:pb-32"
+      className="bg-ink-950 px-6 pb-20 pt-16 sm:px-10 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-32"
     >
       <div className="mx-auto max-w-[1200px]">
         <div className="mx-auto flex w-full flex-col items-center text-center">
@@ -59,7 +59,7 @@ export function PracticeSection() {
             className="font-serif text-[clamp(2rem,5.5vw,4rem)] font-normal leading-[1.1] tracking-[-0.04em] text-ember-50 md:text-[64px] md:leading-[1.1]"
           >
             <span className="block whitespace-normal md:whitespace-nowrap">
-              Three lines of practice.
+              Three offerings.
             </span>
             <span className="block whitespace-normal italic md:whitespace-nowrap">
               One throughline.
@@ -67,9 +67,9 @@ export function PracticeSection() {
           </h2>
 
           <p className="mx-auto mt-7 w-full max-w-[566px] text-[20px] leading-[1.54] tracking-[-0.01em] text-clay-300">
-            Closing the gap between high-level ambition and sustainable
-            excellence: through strategic partnerships, operational
-            infrastructure, and curated executive experiences.
+            Closing the gap between high ambition and a career that lasts,
+            through strategic partnerships, the systems behind sustainable
+            leadership, and curated executive experiences.
           </p>
         </div>
 

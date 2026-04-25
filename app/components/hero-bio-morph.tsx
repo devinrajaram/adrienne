@@ -647,7 +647,7 @@ function MorphImpl({ instant }: { instant: boolean }) {
                 Adrienne L. Lucas
               </p>
 
-              <p className="mt-5 font-serif text-[clamp(1.75rem,4.2vw,2.75rem)] font-normal leading-[1.02] tracking-[-0.04em] text-ink-900">
+              <p className="mt-3 font-serif text-[clamp(1.875rem,4.5vw,3rem)] font-normal leading-[1.02] tracking-[-0.04em] text-ink-900">
                 {BIO_HEADLINE_LINES.map((line) => (
                   <span key={line} className="block">
                     {line}

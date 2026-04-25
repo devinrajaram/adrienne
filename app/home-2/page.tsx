@@ -5,7 +5,7 @@ import { PracticeSection } from "../components/practice-section";
 export default function Home2() {
   return (
     <main className="relative">
-      <Hero fixedHeightPx={820} extraBottomPx={140} />
+      <Hero fixedHeightPx={820} extraBottomPx={120} />
       <BioSection compact />
       <div className="relative z-0">
         <PracticeSection />

@@ -10,7 +10,7 @@ export function BioSection({
       aria-labelledby="bio-eyebrow"
       className={
         compact
-          ? "bg-cream-200 px-6 pt-10 pb-0 sm:px-10 sm:pt-12 lg:px-8 lg:pt-16"
+          ? "bg-cream-200 px-6 pt-4 pb-0 sm:px-10 sm:pt-5 lg:px-8 lg:pt-6"
           : "bg-cream-200 px-6 pt-28 pb-16 sm:px-10 sm:pt-32 sm:pb-20 lg:px-8 lg:pt-40 lg:pb-24"
       }
     >
@@ -34,7 +34,13 @@ export function BioSection({
           </div>
         </div>
 
-        <div className="min-w-0 flex-1 pt-0 lg:ml-0 lg:max-w-[600px] lg:pt-2 xl:max-w-[640px]">
+        <div
+          className={
+            compact
+              ? "min-w-0 flex-1 pt-0 lg:ml-6 lg:mt-10 lg:max-w-[560px] lg:pt-6"
+              : "min-w-0 flex-1 pt-0 lg:ml-0 lg:max-w-[560px] lg:pt-2"
+          }
+        >
           <p
             id="bio-eyebrow"
             className="text-[15px] font-semibold uppercase tracking-[0.18em] text-brick-600"
@@ -42,7 +48,7 @@ export function BioSection({
             Adrienne L. Lucas
           </p>
 
-          <p className="mt-8 font-serif text-[clamp(1.75rem,4.2vw,2.75rem)] font-normal leading-[1.02] tracking-[-0.04em] text-ink-900">
+          <p className="mt-4 font-serif text-[clamp(1.875rem,4.5vw,3rem)] font-normal leading-[1.02] tracking-[-0.04em] text-ink-900">
             {BIO_HEADLINE_LINES.map((line) => (
               <span key={line} className="block">
                 {line}
@@ -50,7 +56,7 @@ export function BioSection({
             ))}
           </p>
 
-          <p className="mt-10 max-w-[510px] text-[18px] leading-[1.54] tracking-[-0.012em] text-ink-900 sm:text-[19px] lg:text-[20px]">
+          <p className="mt-10 max-w-[560px] text-[18px] leading-[1.54] tracking-[-0.012em] text-ink-900 sm:text-[19px] lg:text-[18px]">
             {BIO}
           </p>
         </div>

@@ -34,6 +34,11 @@
     Georgia, "Noto Serif", serif;
 }
 
+html {
+  scrollbar-width: thin;
+  scrollbar-color: gray transparent;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
