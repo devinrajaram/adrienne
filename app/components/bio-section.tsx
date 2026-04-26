@@ -30,6 +30,7 @@ export function BioSection({
               sizes="(max-width: 1024px) 100vw, 501px"
               className="select-none object-cover object-center"
               draggable={false}
+              priority
             />
           </div>
         </div>

@@ -77,7 +77,7 @@ export function Hero({
           : { minHeight: "100svh" }
       }
     >
-      <div className="relative isolate flex min-h-0 flex-1 flex-col bg-haze-300">
+      <div className="relative isolate flex min-h-0 flex-1 flex-col bg-cream-200">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           {!instant ? <HeroShaderBackground /> : null}
         </div>
@@ -132,7 +132,7 @@ export function Hero({
           <motion.div className="mt-9" variants={variants.block}>
             <Link
               href="#contact"
-              className="inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-cream-200 p-2 text-[17px] font-medium leading-[1.19] tracking-[-0.01em] text-ink-900 transition-colors duration-200 hover:bg-cream-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream-200 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300"
+              className="inline-flex h-12 min-w-[279px] items-center justify-center rounded-none bg-cream-200 p-2 text-[17px] font-medium leading-[1.19] tracking-[-0.01em] text-ink-900 transition-[background-color,color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-ink-900 hover:text-cream-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream-200 focus-visible:ring-offset-4 focus-visible:ring-offset-haze-300"
             >
               Start a conversation
             </Link>

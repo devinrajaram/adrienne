@@ -1,7 +1,15 @@
 "use client";
 
+import { motion, useReducedMotion } from "motion/react";
+
 import { PracticeCardIcon } from "./practice-card-icon";
 import { PracticeCardShader } from "./practice-card-shader";
+
+/** Cubic ease-out used by the card scroll-in (matches a calm, expensive feel). */
+const CARD_EASE = [0.16, 1, 0.3, 1] as const;
+const CARD_DURATION = 0.7;
+const CARD_STAGGER = 0.14;
+const CARD_DELAY = 0.08;
 
 type Variant = "aura" | "talent" | "dialogue";
 
@@ -46,6 +54,29 @@ const CARDS: readonly Card[] = [
 ];
 
 export function PracticeSection() {
+  const reduceMotion = useReducedMotion();
+  const instant = reduceMotion === true;
+
+  const listVariants = {
+    hidden: {},
+    visible: {
+      transition: instant
+        ? { staggerChildren: 0, delayChildren: 0 }
+        : { staggerChildren: CARD_STAGGER, delayChildren: CARD_DELAY },
+    },
+  } as const;
+
+  const cardVariants = {
+    hidden: instant ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: instant
+        ? { duration: 0 }
+        : { duration: CARD_DURATION, ease: CARD_EASE },
+    },
+  } as const;
+
   return (
     <section
       id="practice-section-root"
@@ -73,15 +104,25 @@ export function PracticeSection() {
           </p>
         </div>
 
-        <ul
+        <motion.ul
           role="list"
           className="mt-14 grid grid-cols-1 gap-6 sm:mt-16 md:grid-cols-3 md:gap-5 lg:mt-20 lg:gap-6"
+          variants={listVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
         >
           {CARDS.map((card) => (
-            <li key={card.title} className="flex h-full">
-              <article className="mx-auto flex min-h-[558px] h-full w-full max-w-[384px] flex-col overflow-hidden rounded-t-[clamp(96px,28vw,200px)] border border-white/11 bg-ink-925">
+            <motion.li
+              key={card.title}
+              className="flex h-full"
+              variants={cardVariants}
+            >
+              <article className="group mx-auto flex min-h-[558px] h-full w-full max-w-[384px] flex-col overflow-hidden rounded-t-[clamp(96px,28vw,200px)] border border-white/11 bg-ink-925 transition-[background-color,border-color] duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-white/22 hover:bg-[#42261f]">
                 <div className="relative aspect-384/223 w-full overflow-hidden">
-                  <PracticeCardShader variant={card.variant} />
+                  <div className="absolute inset-0 transition-transform duration-[800ms] ease-[cubic-bezier(0.2,0,0,1)] group-hover:scale-[1.05]">
+                    <PracticeCardShader variant={card.variant} />
+                  </div>
                 </div>
 
                 <div className="flex min-h-0 flex-1 flex-col items-center px-6 pt-3 pb-8 text-center sm:px-8 sm:pt-4 sm:pb-10">
@@ -123,9 +164,9 @@ export function PracticeSection() {
                   </div>
                 </div>
               </article>
-            </li>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       </div>
     </section>
   );
