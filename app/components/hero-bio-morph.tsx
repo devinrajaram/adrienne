@@ -655,7 +655,7 @@ function MorphImpl({ instant }: { instant: boolean }) {
                 ))}
               </p>
 
-              <p className="mt-6 max-w-[510px] text-[18px] leading-[1.54] tracking-[-0.012em] text-ink-900 sm:text-[19px] lg:text-[20px]">
+              <p className="mt-6 max-w-[510px] text-[18px] leading-[1.54] tracking-[-0.012em] text-ink-900 sm:text-[19px] lg:text-[18px]">
                 {BIO}
               </p>
             </motion.div>
@@ -666,8 +666,8 @@ function MorphImpl({ instant }: { instant: boolean }) {
         <motion.div
           className={
             m
-              ? "absolute z-20 overflow-hidden bg-haze-300 will-change-[width,height,top,left,border-radius]"
-              : "absolute left-0 right-0 top-0 bottom-[140px] z-20 overflow-hidden bg-haze-300 sm:bottom-[160px]"
+              ? "absolute z-20 overflow-hidden bg-cream-200 will-change-[width,height,top,left,border-radius]"
+              : "absolute left-0 right-0 top-0 bottom-[140px] z-20 overflow-hidden bg-cream-200 sm:bottom-[160px]"
           }
           style={
             m

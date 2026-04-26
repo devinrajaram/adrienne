@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "./components/site-header";
@@ -13,6 +13,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Adrienne L. Lucas — Strategist, Curator, Connector",
   description: HERO_SUBHEAD,
+};
+
+export const viewport: Viewport = {
+  themeColor: "#F0E3C8",
 };
 
 export default function RootLayout({

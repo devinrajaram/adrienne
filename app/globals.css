@@ -35,6 +35,8 @@
 }
 
 html {
+  /* Match paper cream on first paint — avoids flash of peach/orange behind hero shader */
+  background-color: #F0E3C8;
   scrollbar-width: thin;
   scrollbar-color: gray transparent;
 }

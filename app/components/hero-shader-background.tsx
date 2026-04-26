@@ -12,7 +12,13 @@ export function HeroShaderBackground({ className }: { className?: string }) {
   return (
     <Shader
       className={className}
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#F0E3C8",
+      }}
     >
       <MultiPointGradient
         colorA="#8f6c5a"
